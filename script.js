@@ -20,7 +20,14 @@
     const paths={back:'<path d="m15 4-8 8 8 8"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v7l4 3" class="accent"/>',paper:'<path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h3"/><path d="m14 18 6-6" class="accent"/>',pledge:'<path d="M5 3h14v18H5zM9 6l3 4 3-4M8 11h8M8 14h8M12 10v8"/>',plan:'<path d="M8 4H5v17h12v-6M10 2h6v4h-6zM8 10h7M8 14h3"/><path d="m14 19 6-6 2 2-6 6h-2z" class="accent"/>',reserve:'<path d="M15 21H3V3h14v7M6 7h8M6 11h5"/><circle cx="17" cy="16" r="5"/><path d="m15 13 2 3 2-3M14 16h6M17 16v3" class="accent"/>',box:'<path d="m3 7 9-4 9 4-9 4-9-4v11l9 4 9-4V7M12 11v11M7 5l10 5"/>',holding:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h8"/>',face:'<path d="M8 2H5a3 3 0 0 0-3 3v3M16 2h3a3 3 0 0 1 3 3v3M22 16v3a3 3 0 0 1-3 3h-3M8 22H5a3 3 0 0 1-3-3v-3M8 8v3M16 8v3M12 10v4h-2M7 16q5 5 10 0"/>'};
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.paper}</svg>`;
   };
-  const statusbar=()=>'<div class="statusbar" aria-hidden="true"><b>11:41</b><span class="status-icons">▮▮▮ <span>◓</span> <b class="battery">74</b></span></div>';
+  const localTime=()=>{const now=new Date();return `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;};
+  const statusbar=()=>`<div class="statusbar" aria-hidden="true"><b data-clock>${localTime()}</b><span class="status-icons">▮▮▮ <span>◓</span> <b class="battery">74</b></span></div>`;
+  // Separate from navigation timers: the clock keeps ticking across every page.
+  function updateClock(){const clock=app.querySelector('[data-clock]');if(clock)clock.textContent=localTime();}
+  function tickClock(){updateClock();setTimeout(tickClock,1000);}
+  tickClock();
+  document.addEventListener('visibilitychange',updateClock);
+  window.addEventListener('pageshow',updateClock);
   const header=(title,theme='')=>`<header class="page-header ${theme}">${statusbar()}<div class="nav"><button data-action="back" aria-label="返回">${icon('back')}</button><h1 tabindex="-1">${title}</h1><button data-action="menu" class="more" aria-label="更多选项">···<small>37</small></button></div></header>`;
   const chevron='<span class="chevron" aria-hidden="true">›</span>';
   const skeleton=()=>'<div class="skeleton-list" aria-label="正在加载存单"><div class="skeleton banner"></div>'+[1,2,3].map(()=>'<div class="skeleton-row"><i class="skeleton square"></i><div><i class="skeleton line"></i><i class="skeleton line short"></i><i class="skeleton line"></i></div></div>').join('')+'</div>';
