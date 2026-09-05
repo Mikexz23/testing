@@ -40,5 +40,17 @@
 .deposit-group-title~.row{display:grid;grid-template-columns:minmax(0,1fr) 36cqw;column-gap:2cqw}
 .deposit-group-title~.row strong{text-align:right;justify-self:stretch}
 .row strong,.holding-row strong,.holdings-title strong,.balance-cards strong,.deposit-balance strong,.summary-columns strong,.transaction-row,.detail-rows dd{font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
-@media(max-width:500px){html,body{height:100%;overflow:hidden}.app-stage{padding:0;background:#fff;min-height:0;height:100dvh;display:block}.phone-shell{width:100%;max-width:none;min-width:0;height:100%}.screen-stack{height:100%;aspect-ratio:auto;border-radius:0;box-shadow:none}.demo-toolbar,.helper-text{display:none}}
+/* Keep the scroll surface behind the home indicator; inset content, not its background. */
+.overview-scroll{padding-bottom:0;background:#f7f7f7}
+.overview-hero{background:#343a55}
+.account-body{padding-bottom:calc(4cqw + var(--safe-bottom));box-shadow:0 -6cqw 0 #343a55}
+.modal.sheet{padding-bottom:calc(8cqw + var(--safe-bottom))}
+@media(max-width:500px){
+  html,body{height:100%;min-height:100%;background:var(--page-bottom-bg,#fff);overscroll-behavior:none}
+  body{position:relative;margin:0}
+  .app-stage{position:absolute;inset:0;padding:0;background:var(--page-bottom-bg,#fff);min-height:100%;height:var(--app-height,100%);display:block}
+  .phone-shell{width:100%;max-width:none;min-width:0;height:100%}
+  .screen-stack{height:100%;aspect-ratio:auto;border-radius:0;box-shadow:none;background:var(--page-bottom-bg,#fff)}
+  .demo-toolbar,.helper-text{display:none}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

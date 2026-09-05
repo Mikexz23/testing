@@ -9,6 +9,24 @@
   const total=products.reduce((sum,p)=>sum+p.amount,0);
   const money=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   const app=document.getElementById('app'),overlay=document.getElementById('overlay'),phone=document.getElementById('phone');
+  // Some iOS Home Screen versions report dvh without the bottom system area.
+  // In that mode only, use the device's logical screen bounds for the app surface.
+  // Ordinary Safari keeps its actual browser viewport, including toolbar changes.
+  function syncAppHeight(){
+    const root=document.documentElement;
+    if(!root)return;
+    const installed=window.navigator?.standalone===true||window.matchMedia?.('(display-mode: standalone)').matches;
+    const iphone=/iPhone|iPod/.test(window.navigator?.userAgent||'');
+    if(installed&&iphone&&window.screen?.height&&window.screen?.width){
+      const landscape=window.matchMedia?.('(orientation: landscape)').matches;
+      const height=landscape?Math.min(window.screen.width,window.screen.height):Math.max(window.screen.width,window.screen.height);
+      root.style.setProperty('--app-height',`${height}px`);
+    }else root.style.removeProperty('--app-height');
+  }
+  syncAppHeight();
+  window.addEventListener('resize',syncAppHeight);
+  window.addEventListener('orientationchange',syncAppHeight);
+  window.addEventListener('pageshow',syncAppHeight);
   const titles={splash:'开机',home:'首页',login:'登录',overview:'账户总览',deposits:'我的存单',holding:'持仓详情',records:'交易记录',transaction:'交易详情',products:'存款产品'};
   let route={page:'splash',product:'m',status:'已起息'},loggedIn=false,phase='ready',generation=0,modal=null,filterStatus='全部',filterProduct='all',card='全部一卡通',timerIds=[],stack=[],positions={},returnFocus=null;
   const collapsed={};
@@ -37,6 +55,8 @@
   function productPage(){return `${header('存款产品','red')}<div class="scroll-area product-scroll" data-scroll><p class="product-intro">招行特色存款</p>${products.map(p=>`<button class="card product-card" data-go="holding" data-product="${p.id}"><b>${p.name}</b><div><strong class="red-text">${p.rate.toFixed(2)}<small>%</small></strong><span>12个月 ${chevron}</span></div><small>年利率 · 查看已持有存单</small></button>`).join('')}</div>${navTabs('products')}`;}
   function render(restoreScroll=0){
     const page=route.page;phone.dataset.page=page;phone.classList.toggle('dark',['home','login'].includes(page));phone.classList.toggle('busy',phase!=='ready');
+    const bottomColor=['home','login'].includes(page)?'#000000':['overview','deposits','products'].includes(page)&&phase!=='blank'?'#f7f7f7':'#ffffff';
+    document.documentElement?.style.setProperty('--page-bottom-bg',bottomColor);
     const views={home,login,overview,deposits:depositPage,holding,records,transaction,products:productPage};
     app.innerHTML=page==='splash'?'<button class="splash" data-go="home" aria-label="进入首页"><img src="01-开机.png" alt="招商银行：支付 理财 借钱"></button>':phase==='blank'?`${header(['overview','deposits'].includes(page)?'':titles[page])}<div class="web-progress" role="status" aria-label="正在打开页面"></div>`:views[page]();
     app.setAttribute('aria-busy',String(phase!=='ready'));document.getElementById('caption').textContent=titles[page]+(phase!=='ready'?' · 加载中':'');
