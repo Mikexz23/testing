@@ -23,8 +23,8 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   const configs={
     transfer:{file:'IMG_9517.png',top:92,bottom:820},
     credit:{file:'IMG_9518.png',top:92,bottom:754,theme:'coral',tabs:['用卡','管卡']},
-    finance:{file:'理财页.png',top:92,bottom:754,tabs:['产品','持仓']},
-    funds:{file:'IMG_9519.png',top:92,bottom:754,tabs:['基金','发现','自选','持仓']},
+    finance:{file:'理财页.png',top:92,bottom:754,tabs:['产品','持仓'],search:'交银理财灵动聚利日开…'},
+    funds:{file:'IMG_9519.png',top:92,bottom:754,tabs:['基金','发现','自选','持仓'],search:'广发美国房地产指数…'},
     borrow:{file:'IMG_9521.png',top:92,bottom:754,theme:'gold',tabs:['借钱','我的额度']},
     activities:{file:'IMG_9523.png',top:92,bottom:830},
     remittance:{file:'IMG_9525.png',top:92,bottom:830},
@@ -43,16 +43,16 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
     if(page==='remittance')return hit(15,15,179,150,'普通境外汇款',null,'local-form','data-label="普通境外汇款"')+hit(195,15,179,150,'留学快汇',null,'local-form','data-label="留学快汇"')+hit(15,167,119,65,'汇款记录','income')+hit(15,338,360,360,'历史收款人',null,'remit-recipient');
     if(page==='fxclosed')return hit(112,423,167,44,'我知道了',null,'back');
     if(page==='community')return hit(15,100,360,120,'养老避坑指南',null,'article')+hit(15,340,360,300,'社区资讯',null,'article');
-    if(page==='wealth')return hit(0,119,78,61,'理财','finance')+hit(78,119,78,61,'基金','funds')+hit(234,119,78,61,'存款','deposits')+hit(312,119,78,61,'全部','all')+hit(10,26,370,92,'显示或隐藏总资产',null,'wealth-balance');
+    if(page==='wealth')return hit(0,173,78,70,'理财','finance')+hit(78,173,78,70,'基金','funds')+hit(234,173,78,70,'存款','deposits')+hit(312,255,78,70,'全部','all')+hit(0,255,78,70,'跨境金融','forex')+hit(10,55,370,100,'显示或隐藏总资产',null,'wealth-balance');
     if(page==='life')return hit(0,0,92,40,'选择城市','cities')+hit(14,180,360,65,'生活服务',null,'life-services')+hit(20,345,350,290,'精选活动','activities');
     return '';
   }
   function screenshotPage(page,phase){
     const c=configs[page];
-    const bar=c.main?`<div class="native-background ${c.theme||''}"></div>`:header(titles[page],c.theme||'');
+    const bar=c.main?`<div class="native-background ${c.theme||''}"></div>`:c.search?`<header class="page-header" aria-label="${titles[page]}"><div class="nav"><button data-action="back" aria-label="返回">${icon('back')}</button><button class="reference-search" data-action="${page==='funds'?'fund-categories':'finance-categories'}">⌕ ${c.search}</button><button class="more" data-action="menu" aria-label="更多">···<small>37</small></button></div></header>`:header(titles[page],c.theme||'');
     let content=phase!=='ready'?`<div class="extra-skeleton">${skeleton()}</div>`:slice(P+c.file,c.top,c.bottom,pageHits(page),titles[page]);
     if(page==='finance'&&phase==='ready')content+=slice(P+'IMG_9515.png',128,754,hit(10,0,370,605,'理财产品分类',null,'finance-categories'),'活钱管理、稳健低波、稳健增值');
-    if(page==='wealth'&&phase==='ready')content+=`<button class="wealth-live-balance" data-action="wealth-balance" aria-label="显示或隐藏总资产"><span>${wealthVisible?money(total+359.52):'******'}</span><small>总资产(元)</small></button>`;
+    if(page==='wealth'&&phase==='ready'&&wealthVisible)content+=`<button class="wealth-live-balance" data-action="wealth-balance" aria-label="隐藏总资产"><span>${money(total+359.52)}</span><small>总资产(元)</small></button>`;
     return `${bar}<div class="scroll-area reference-scroll ${c.main?'main-reference-scroll':''} ${c.theme||''}" data-scroll>${content}</div>${c.main?mainTabs(page):c.tabs?miniTabs(c.tabs):''}`;
   }
   const cityGroups={A:['安阳','安庆','鞍山'],B:['北京','包头','滨海','宝鸡','滨州'],C:['重庆','成都','长沙','常州','长春'],D:['大连','东莞','大庆'],F:['福州','佛山'],G:['广州','桂林','贵阳'],H:['杭州','合肥','哈尔滨','海口'],J:['济南','嘉兴','金华'],K:['昆明'],L:['兰州','洛阳'],N:['南京','南昌','南宁','宁波'],Q:['青岛','泉州'],S:['上海','深圳','苏州','沈阳','石家庄'],T:['天津','太原','台州'],W:['武汉','无锡','温州'],X:['西安','厦门','徐州'],Y:['烟台','扬州'],Z:['郑州','珠海','中山']};
@@ -101,6 +101,8 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
     };
     if(messages[action]){service(...messages[action]);return true;}return false;
   }
+  const preloaded=new Set();
+  function preload(page){if(typeof Image==='undefined')return;const files=configs[page]?[configs[page].file]:page==='all'?['IMG_9526.png']:[];if(page==='finance')files.push('IMG_9515.png');if(page==='home')files.push('首页下.png');for(const file of files){if(preloaded.has(file))continue;preloaded.add(file);const image=new Image();image.src=P+file;}}
   function reset(){fxSide='购汇';incomeMonth='2026-09';incomeFilter='全部';city='北京';wealthVisible=false;activityTab='最新上线';}
-  return {titles,timing,home,profile,mainTabs,handle,reset,render:(page,phase)=>page==='income'?income(phase):page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
+  return {titles,timing,home,profile,mainTabs,handle,reset,preload,render:(page,phase)=>page==='income'?income(phase):page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
 };

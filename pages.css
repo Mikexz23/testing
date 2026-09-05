@@ -12,6 +12,7 @@
 .native-background.coral,.page-header.coral{background:#e6555b;color:#fff}
 .native-background.gold,.page-header.gold{background:#e9c47d;color:#fff}
 .page-header.coral .more,.page-header.gold .more{color:#fff}
+.nav>button.reference-search{flex:1;width:auto;height:8cqw;justify-content:flex-start;padding:0 3cqw;border:1px solid #ddd;background:#fafafa;border-radius:8cqw;font-size:3.6cqw;color:#aaa;white-space:nowrap;overflow:hidden}
 .main-tabs{position:absolute;left:5%;right:5%;bottom:max(3cqw,var(--safe-bottom));height:16cqw;z-index:5;display:flex;align-items:stretch;padding:1cqw;border-radius:12cqw;background:#fffffff0;color:#999;backdrop-filter:blur(16px);box-shadow:0 1cqw 10cqw #0000000c}
 .dark .main-tabs{background:#e5e5e5e8}
 .main-tabs button{flex:1;border-radius:10cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;font-size:3.1cqw}
@@ -22,6 +23,7 @@
 .mini-tabs button{flex:1;display:flex;flex-direction:column;align-items:center;padding:2cqw 1cqw;font-size:3.1cqw;gap:1.2cqw;color:#999;border-radius:10cqw;white-space:nowrap}
 .mini-tabs svg{width:5.7cqw;height:5.7cqw}.mini-tabs .selected{color:#111;background:#f6f6f6}
 .screen-stack[data-page="income"] .mini-tabs{left:5%;right:5%;box-shadow:none}
+.screen-stack[data-page="funds"] .mini-tabs{left:5%;right:5%}
 .home-search{position:absolute;top:0;left:0;right:0;padding:var(--safe-top) 4cqw 0;min-height:calc(var(--safe-top) + 14.36cqw);display:flex;gap:3cqw;align-items:center;background:#000;color:#e3bc87;z-index:3}
 .home-search>button{height:14.36cqw;font-size:6cqw;min-width:7cqw}
 .home-search .search-pill{display:flex;align-items:center;gap:2cqw;flex:1;background:#191919;border-radius:9cqw;height:8cqw;padding:0 3cqw;color:#ddd;font-size:5cqw}
@@ -50,4 +52,4 @@
 .income-totals{display:flex;justify-content:space-between;align-items:start;font-size:3.8cqw;margin-top:6cqw;color:#555}.income-totals small{display:block;color:#aaa;font-size:3.4cqw;margin-top:2cqw}.income-totals i{font-style:normal;color:#aaa}
 .income-day{color:#aaa;font-size:3.5cqw;padding:5cqw 0 2cqw}.income-row{display:flex;align-items:flex-start;gap:2.5cqw;width:100%;text-align:left;min-height:19cqw;padding:4cqw 0}.income-row svg{width:4.2cqw;height:4.2cqw;color:#999;flex:none;margin-top:.5cqw}.income-row>div{flex:1;min-width:0;font-size:3.5cqw;color:#666}.income-row>div>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.income-row small{display:block;font-size:3.1cqw;color:#aaa;margin-top:1.5cqw}.income-row strong{font-size:3.8cqw;font-weight:400;white-space:nowrap;color:#777}
 .all-scroll{background:#fff;padding:2cqw 0 calc(8cqw + var(--safe-bottom))}.all-scroll h2{font-size:4.7cqw;margin:4cqw 5cqw;font-weight:500}.service-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4cqw 0;padding:3cqw 1cqw}.service-grid button{display:flex;flex-direction:column;align-items:center;gap:3cqw;padding:4cqw 0;font-size:3.6cqw;min-width:0}.service-grid svg{width:7cqw;height:7cqw}.all-categories{display:flex;gap:5cqw;overflow-x:auto;position:sticky;top:0;background:#fff;padding:4cqw 5cqw;border-top:2cqw solid #f7f7f7;z-index:2;scrollbar-width:none;font-size:4cqw;white-space:nowrap}
-.wealth-live-balance{position:absolute;top:17cqw;left:8cqw;background:#fff9f9;text-align:left;padding:1cqw;width:58cqw;font-size:5cqw}.wealth-live-balance small{display:block;color:#999;font-size:3cqw;margin-top:1.5cqw}
+.wealth-live-balance{position:absolute;top:21.5cqw;left:7cqw;background:linear-gradient(#fde4e5,#fffafa);text-align:left;padding:1cqw;width:60cqw;min-height:16cqw;font-size:5cqw}.wealth-live-balance small{display:block;color:#777;font-size:3.5cqw;margin-top:4cqw}
