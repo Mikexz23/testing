@@ -43,8 +43,10 @@
   const chevron='<span class="chevron" aria-hidden="true">›</span>';
   const skeleton=()=>'<div class="skeleton-list" aria-label="正在加载存单"><div class="skeleton banner"></div>'+[1,2,3].map(()=>'<div class="skeleton-row"><i class="skeleton square"></i><div><i class="skeleton line"></i><i class="skeleton line short"></i><i class="skeleton line"></i></div></div>').join('')+'</div>';
   const navTabs=active=>`<nav class="deposit-tabs" aria-label="存款导航"><button data-go="products" class="${active==='products'?'selected':''}" ${active==='products'?'aria-current="page"':''}>${icon('box')}<span>产品</span></button><button data-go="deposits" class="${active==='deposits'?'selected':''}" ${active==='deposits'?'aria-current="page"':''}>${icon('holding')}<span>持仓</span></button></nav>`;
-  function home(){return `<div class="image-page"><div class="image-canvas"><img class="home-image" src="02-首页.png" alt="招商银行首页：账户总览、转账、理财等服务"><button class="hotspot account-hotspot" data-action="account" aria-label="账户总览"></button><button class="hotspot profile-hotspot" data-go="login" aria-label="我的"></button></div></div>`;}
-  function login(){return `<div class="image-page"><div class="image-canvas"><img class="home-image" src="03-登陆.png" alt="我的：面容 ID 登录"><button class="hotspot face-hotspot" data-action="face" aria-label="使用面容 ID 登录"></button><button class="hotspot home-hotspot" data-go="home" aria-label="首页"></button><button class="hotspot options-hotspot" data-action="login-options" aria-label="更多登录选项"></button></div></div>`;}
+  const extra=window.createExtraPages({header,icon,skeleton,money,total,products,navigate,render,service,choices,goBack,getRoute:()=>route});
+  Object.assign(titles,extra.titles);
+  function home(){return extra.home();}
+  function login(){return extra.profile();}
   function overview(){const loading=phase!=='ready';return `${header('账户总览','purple')}<div class="scroll-area overview-scroll" data-scroll><div class="overview-hero"><p class="announcement"><i></i> 开实名钱包，领10元红包</p><div class="balance-cards"><div><b>总资产</b><strong>${loading?'<span class="spinner"></span>':money(total+359.52)}</strong></div><aside>本月剩余应还<strong>${loading?'--':'0.00'}</strong></aside></div></div><div class="account-body">${loading?'<div class="overview-placeholder"></div>':`<p class="category blue">活钱 359.52</p><section class="card"><button class="row primary" data-action="collapse" data-group="cash" aria-expanded="${!collapsed.cash}"><b>直接可用 <span class="triangle">${collapsed.cash?'▾':'▴'}</span></b><strong>359.33 ${chevron}</strong></button>${collapsed.cash?'':'<div class="row"><span>活期存款</span><strong>0.00</strong></div><div class="row"><span>朝朝宝</span><strong>359.33</strong></div>'}</section><section class="card row"><span>外汇</span><div class="align-right"><strong>0.19</strong><small>折合人民币</small></div></section><p class="category muted">投资 ${money(total)}</p><section class="card"><div class="deposit-group-title"><button data-action="collapse" data-group="deposits" aria-expanded="${!collapsed.deposits}">存款 <span class="triangle">${collapsed.deposits?'▾':'▴'}</span></button><button data-go="deposits" aria-label="查看全部存款 ${money(total)}"><strong>${money(total)}</strong>${chevron}</button></div>${collapsed.deposits?'':products.map(p=>`<button class="row" data-go="deposits"><span>${p.name}</span><strong>${money(p.amount)}</strong></button>`).join('')}</section><section class="card row insurance"><b>保险</b><span>未配置，您的保障方案待查看 ${chevron}</span></section><div class="notes"><p>说明：</p><p>1.资产信息仅供参考，且不包含保险资产、延期黄金市值，请以实际信息为准。</p><p>2.总负债包含信用卡负债与个人贷款余额。其中，信用卡负债金额为预估值，包含尚未入账的交易，与账单金额加总可能不一致，请以入账后为准。</p><p>3.外币资产将会被折算成人民币资产统计，因汇率实时变动，请以<span class="blue">实际信息</span>为准。</p><p>4.信用卡如有美元账单，将会折算成人民币负债计入到总负债中。</p></div><p class="contact blue">如有其他疑问或建议，可联系小招</p>`}</div></div>`;}
   function depositPage(){const loading=phase!=='ready';return `${header('我的存单','red')}<div class="scroll-area deposits-scroll" data-scroll><div class="deposit-red"></div><section class="deposit-balance card"><div><strong>${loading?'--':money(total)}</strong><button data-action="cards">${card} <span class="triangle">▾</span></button></div><p>存单总本金(元)</p></section><nav class="deposit-actions card" aria-label="存单服务">${[['reserve','已预留额度','reserved'],['clock','交易记录','records'],['paper','纸质存单','paper'],['pledge','存单质押','pledge'],['plan','协议/计划','plan']].map(([i,label,a])=>`<button data-action="${a}">${icon(i)}<span>${label}</span></button>`).join('')}</nav>${loading?skeleton():`<button class="recommendation card" data-go="products"><em>推荐</em><span>定期本金兑付率100%，持有更安心</span>${chevron}</button><section class="holdings card"><button class="holdings-title" data-action="collapse" data-group="holdings" aria-expanded="${!collapsed.holdings}"><b>招行特色 <span class="triangle">${collapsed.holdings?'▾':'▴'}</span></b><strong>¥${money(total)}</strong></button>${collapsed.holdings?'':products.map(p=>`<button class="holding-row" data-go="holding" data-product="${p.id}" aria-label="查看${p.name}持仓详情"><div><span>${p.name} ${p.serial}</span><strong>${money(p.amount)}</strong></div><div class="muted"><span>到期日：${p.end}</span><span>本金(元)</span></div><div class="muted">年利率：<span class="red-text">${p.rate.toFixed(2)}%</span></div></button>`).join('')}</section>`}</div>${navTabs('deposits')}`;}
   const detailRows=rows=>`<dl class="detail-rows">${rows.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
@@ -55,10 +57,10 @@
   function productPage(){return `${header('存款产品','red')}<div class="scroll-area product-scroll" data-scroll><p class="product-intro">招行特色存款</p>${products.map(p=>`<button class="card product-card" data-go="holding" data-product="${p.id}"><b>${p.name}</b><div><strong class="red-text">${p.rate.toFixed(2)}<small>%</small></strong><span>12个月 ${chevron}</span></div><small>年利率 · 查看已持有存单</small></button>`).join('')}</div>${navTabs('products')}`;}
   function render(restoreScroll=0){
     const page=route.page;phone.dataset.page=page;phone.classList.toggle('dark',['home','login'].includes(page));phone.classList.toggle('busy',phase!=='ready');
-    const bottomColor=['home','login'].includes(page)?'#000000':['overview','deposits','products'].includes(page)&&phase!=='blank'?'#f7f7f7':'#ffffff';
+    const bottomColor=['home','login'].includes(page)?'#000000':['overview','deposits','products','credit','finance','funds','borrow','activities','fxclosed','wealth','life'].includes(page)&&phase!=='blank'?'#f7f7f7':'#ffffff';
     document.documentElement?.style.setProperty('--page-bottom-bg',bottomColor);
     const views={home,login,overview,deposits:depositPage,holding,records,transaction,products:productPage};
-    app.innerHTML=page==='splash'?'<button class="splash" data-go="home" aria-label="进入首页"><img src="01-开机.png" alt="招商银行：支付 理财 借钱"></button>':phase==='blank'?`${header(['overview','deposits'].includes(page)?'':titles[page])}<div class="web-progress" role="status" aria-label="正在打开页面"></div>`:views[page]();
+    app.innerHTML=page==='splash'?'<button class="splash" data-go="home" aria-label="进入首页"><img src="01-开机.png" alt="招商银行：支付 理财 借钱"></button>':phase==='blank'?`${header(['overview','deposits'].includes(page)?'':titles[page])}<div class="web-progress" role="status" aria-label="正在打开页面"></div>`:views[page]?views[page]():extra.render(page,phase);
     app.setAttribute('aria-busy',String(phase!=='ready'));document.getElementById('caption').textContent=titles[page]+(phase!=='ready'?' · 加载中':'');
     const scroll=app.querySelector('[data-scroll]');if(scroll)scroll.scrollTop=restoreScroll;
   }
@@ -75,12 +77,13 @@
     phone.classList.remove('enter-forward','enter-back');void phone.offsetWidth;phone.classList.add(back?'enter-back':'enter-forward');
     if(instant||['home','login','splash'].includes(route.page)){phase='ready';render(scroll);if(route.page==='splash')later(()=>navigate({page:'home'},{replace:true}),1600);return;}
     phase=route.page==='records'?'skeleton':'blank';render(scroll);
-    const blankTime=back?260:route.page==='deposits'?1500:route.page==='overview'?850:950;
-    if(['overview','deposits'].includes(route.page))later(()=>{phase='skeleton';render(scroll)},blankTime);
-    const duration=route.page==='records'?(back?650:1100):blankTime+(['overview','deposits'].includes(route.page)?(back?400:1100):0);
+    const customTiming=extra.timing[route.page];
+    const blankTime=back?260:customTiming?customTiming[0]:route.page==='deposits'?1500:route.page==='overview'?850:950;
+    if(['overview','deposits'].includes(route.page)||(customTiming&&customTiming[1]))later(()=>{phase='skeleton';render(scroll)},blankTime);
+    const duration=route.page==='records'?(back?650:1100):blankTime+(customTiming?(back?300:customTiming[1]):['overview','deposits'].includes(route.page)?(back?400:1100):0);
     later(()=>{phase='ready';render(scroll);app.querySelector('h1')?.focus({preventScroll:true})},duration);
   }
-  function goBack(){if(modal){closeModal();return;}if(stack.length){history.back();return;}navigate({page:{holding:'deposits',transaction:'records',records:'deposits',deposits:'overview',overview:'home',products:'deposits',login:'home'}[route.page]||'home'},{back:true,replace:true});}
+  function goBack(){if(modal){closeModal();return;}if(stack.length){history.back();return;}navigate({page:{holding:'deposits',transaction:'records',records:'deposits',deposits:'overview',overview:'home',products:'deposits',login:'home',fxclosed:'forex'}[route.page]||'home'},{back:true,replace:true});}
   function showModal(content,type='sheet'){
     returnFocus=document.activeElement;modal=type;app.inert=true;
     overlay.innerHTML=`<div class="modal-backdrop"><section class="modal ${type}" role="dialog" aria-modal="true" aria-label="${type==='face'?'登录验证':'选项'}">${content}</section></div>`;overlay.querySelector('button')?.focus();
@@ -91,7 +94,7 @@
   function service(title,content){showModal(`<h2>${title}</h2><p class="service-message">${content}</p><button class="sheet-cancel" data-action="close">知道了</button>`);}
   document.addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
-    if(b.id==='restart'||b.dataset.action==='restart'){cancelTimers();loggedIn=false;stack=[];positions={};filterStatus='全部';filterProduct='all';card='全部一卡通';Object.keys(collapsed).forEach(k=>delete collapsed[k]);navigate({page:'splash'},{replace:true,instant:true});return;}
+    if(b.id==='restart'||b.dataset.action==='restart'){cancelTimers();extra.reset();loggedIn=false;stack=[];positions={};filterStatus='全部';filterProduct='all';card='全部一卡通';Object.keys(collapsed).forEach(k=>delete collapsed[k]);navigate({page:'splash'},{replace:true,instant:true});return;}
     if(b.dataset.go){if(phase!=='ready'&&b.dataset.go!=='home')return;navigate({page:b.dataset.go,product:b.dataset.product||route.product,status:b.dataset.status||'已起息'});return;}
     const action=b.dataset.action;
     if(action==='back'){goBack();return;}if(action==='close'){closeModal();return;}
@@ -103,6 +106,7 @@
     if(action==='login-options'){showModal('<h2>登录方式</h2><p class="service-message">本地演示无需真实密码或面容信息。</p><button class="choice" data-action="demo-login">演示登录<span>›</span></button><button class="sheet-cancel" data-action="close">取消</button>');return;}
     if(action==='demo-login'){loggedIn=true;navigate({page:'overview'});return;}
     if(phase!=='ready'&&!['filter-status','filter-product','select-status','select-product'].includes(action))return;
+    if(extra.handle(action,b))return;
     if(action==='records'){navigate({page:'records'});return;}
     if(action==='collapse'){saveScroll();collapsed[b.dataset.group]=!collapsed[b.dataset.group];render(positions[key(route)]);return;}
     if(action==='cards'){choices('选择一卡通',[['全部一卡通','全部一卡通'],['一卡通 (0813)','一卡通 6214********0813']],'select-card',card);return;}
