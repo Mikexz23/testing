@@ -1,4 +1,6 @@
-:root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#333;background:#101010;font-synthesis:none;-webkit-tap-highlight-color:transparent}
+/* Use installed Apple fonts; Chinese glyphs fall back from DIN to Heiti SC. */
+@font-face{font-family:"App DIN";src:local("DIN Alternate Bold"),local("DINAlternate-Bold");font-weight:100 900;font-display:swap}
+:root{--app-font:"App DIN","DIN Alternate","Heiti SC","黑体-简","STHeitiSC-Light","PingFang SC",-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color-scheme:light;font-family:var(--app-font);color:#333;background:#101010;font-synthesis:none;-webkit-tap-highlight-color:transparent}
 *{box-sizing:border-box}body{margin:0}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}button:disabled{cursor:wait}button:focus-visible{outline:2px solid #5899e5;outline-offset:-2px}h1,h2,p{margin:0}svg{width:24px;height:24px;display:block}img{user-select:none;-webkit-user-drag:none}
 .app-stage{min-height:100dvh;display:grid;place-items:center;padding:24px 16px 55px;background:radial-gradient(ellipse at 50% 25%,#292929,#101010 70%)}.phone-shell{width:min(390px,calc((100dvh - 112px)*390/844));min-width:280px}.screen-stack{position:relative;width:100%;aspect-ratio:390/844;overflow:hidden;border-radius:38px;background:#fff;box-shadow:0 28px 80px #0009,0 0 0 1px #ffffff20;container-type:inline-size;isolation:isolate;font-size:14px}
 #app{position:absolute;inset:0;overflow:hidden;background:#fff;font-size:3.59cqw}.dark #app{background:#000;color:#fff}.demo-toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:15px;font-size:12px;color:#999;gap:12px}.demo-toolbar>span:first-child{font-size:10px;border:1px solid #4b4b4b;padding:3px 5px;border-radius:4px}.demo-toolbar button{color:#c8c8c8}.helper-text{position:fixed;bottom:15px;color:#777;font-size:12px;text-align:center;margin:0 12px}
@@ -15,6 +17,12 @@
 .phone-shell{width:390px;max-width:100%;min-width:0}
 .screen-stack{aspect-ratio:1170 / 2532;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
 .page-header{padding-top:var(--safe-top)}
+.screen-stack[data-page="overview"]{background:#343a55}
+.screen-stack[data-page="deposits"],.screen-stack[data-page="products"]{background:#ed4653}
+/* Backgrounds reach the screen edges; only interactive content is inset. */
+.page-header{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.page-header.purple{background:#343a55}
+.page-header.red{background:#ed4653}
 .scroll-area{top:calc(var(--safe-top) + 12.31cqw);padding-bottom:calc(14cqw + var(--safe-bottom))}
 .deposits-scroll,.product-scroll{padding-bottom:calc(32cqw + var(--safe-bottom))}
 .web-progress{top:calc(var(--safe-top) + 12.31cqw)}
@@ -25,5 +33,12 @@
 .splash img{object-fit:contain;background:#fff}
 /* Mask the gesture bar baked into the supplied splash screenshot. */
 .splash::after{content:"";position:absolute;left:30%;right:30%;bottom:0;height:2%;background:#fff}
+/* A shared amount column keeps every final digit on the same right edge. */
+.holding-row>div:first-child,.holding-row>div:nth-child(2){display:grid;grid-template-columns:minmax(0,1fr) 36cqw;column-gap:2cqw}
+.holding-row>div>span:first-child{min-width:0}
+.holding-row>div>strong,.holding-row>div:nth-child(2)>span:last-child{text-align:right;justify-self:stretch;white-space:nowrap}
+.deposit-group-title~.row{display:grid;grid-template-columns:minmax(0,1fr) 36cqw;column-gap:2cqw}
+.deposit-group-title~.row strong{text-align:right;justify-self:stretch}
+.row strong,.holding-row strong,.holdings-title strong,.balance-cards strong,.deposit-balance strong,.summary-columns strong,.transaction-row,.detail-rows dd{font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
 @media(max-width:500px){html,body{height:100%;overflow:hidden}.app-stage{padding:0;background:#fff;min-height:0;height:100dvh;display:block}.phone-shell{width:100%;max-width:none;min-width:0;height:100%}.screen-stack{height:100%;aspect-ratio:auto;border-radius:0;box-shadow:none}.demo-toolbar,.helper-text{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
