@@ -1,49 +1,18 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050505" />
-    <title>支付 理财 借钱 · App replica</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-  </head>
-  <body>
-    <main class="app-stage" aria-label="招商银行移动应用演示">
-      <div class="phone-shell">
-        <div class="screen-stack">
-          <section class="screen is-active" data-screen="splash" aria-label="01 开机">
-            <img src="01-开机.png" alt="支付 理财 借钱 App 开机画面" />
-            <button class="hotspot hotspot-splash" type="button" data-go="home" aria-label="进入首页"></button>
-          </section>
-
-          <section class="screen" data-screen="home" aria-label="02 首页" aria-hidden="true">
-            <img src="02-首页.png" alt="招商银行 App 首页" />
-            <button class="hotspot hotspot-account" type="button" data-go="login" aria-label="打开账户总览并登录"></button>
-            <button class="hotspot hotspot-profile" type="button" data-go="login" aria-label="打开我的并登录"></button>
-          </section>
-
-          <section class="screen" data-screen="login" aria-label="03 登录" aria-hidden="true">
-            <img src="03-登陆.png" alt="招商银行 App 登录页面" />
-            <button class="hotspot hotspot-face-login" type="button" data-go="overview" aria-label="使用面容 ID 登录"></button>
-            <button class="hotspot hotspot-login-back" type="button" data-go="home" aria-label="返回首页"></button>
-          </section>
-
-          <section class="screen" data-screen="overview" aria-label="04 账户总览" aria-hidden="true">
-            <img src="04-账户总览.png" alt="账户总览页面" />
-            <button class="hotspot hotspot-overview-back" type="button" data-go="login" aria-label="返回登录页面"></button>
-            <button class="hotspot hotspot-deposits" type="button" data-go="deposits" aria-label="打开存款详情"></button>
-          </section>
-
-          <section class="screen" data-screen="deposits" aria-label="05 我的存单" aria-hidden="true">
-            <img src="05-我的存单.png" alt="我的存单页面" />
-            <button class="hotspot hotspot-deposits-back" type="button" data-go="overview" aria-label="返回账户总览"></button>
-          </section>
-        </div>
-        <div class="screen-caption" aria-live="polite">01 · 开机</div>
-      </div>
-      <p class="helper-text">点击屏幕上的交互区域体验 01 → 02 → 03 → 04 → 05 工作流</p>
-    </main>
-    <script src="script.js"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101010">
+<title>招商银行 · 交互演示</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="app-stage"><div class="phone-shell">
+<div class="screen-stack" id="phone" aria-label="招商银行移动应用交互演示"><div id="app"></div><div id="overlay"></div><div class="home-indicator" aria-hidden="true"></div></div>
+<div class="demo-toolbar"><span>交互演示</span><span id="caption" aria-live="polite">开机</span><button id="restart" type="button">重新体验</button></div>
+</div><p class="helper-text">账户总览 → 存款 → 持仓详情 / 交易记录 · 可上下滑动，左侧边缘右滑返回</p></main>
+<script src="script.js"></script>
+</body>
 </html>
