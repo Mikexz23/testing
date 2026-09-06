@@ -73,3 +73,8 @@
 .holdings-title strong,.holding-row>div:first-child strong,.summary-columns strong,
 .ledger-row strong,.ledger-row .ledger-balance,.ledger-detail-amount strong,
 .transaction-row>div>span:last-child{letter-spacing:.015em}
+/* Overview amounts end on one vertical line; disclosure arrows use their own gutter. */
+.overview-scroll .deposit-group-title>button:last-child{gap:0}
+.overview-scroll .deposit-group-title>button:last-child>.chevron{width:4.1cqw;flex:0 0 4.1cqw;margin-left:0;text-align:right}
+.overview-scroll .deposit-group-title~.row strong{padding-right:4.1cqw}
+.overview-scroll .account-body>.card.row .align-right{padding-right:4.1cqw}
