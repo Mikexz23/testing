@@ -150,6 +150,16 @@
   phone.addEventListener('touchmove',e=>{if(!touch||!touch.edge||!installedApp())return;const t=e.touches[0];if(t.clientX-touch.x>12&&Math.abs(t.clientY-touch.y)<Math.abs(t.clientX-touch.x)&&e.cancelable){e.preventDefault();touch.owned=true;}},{passive:false});
   phone.addEventListener('touchcancel',()=>{touch=null;},{passive:true});
   phone.addEventListener('touchend',e=>{if(!touch)return;const start=touch;touch=null;const t=e.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;if(start.edge&&start.owned&&dx>75&&Math.abs(dy)<70)goBack();else if(!start.edge&&start.top&&dy>95&&Math.abs(dx)<50&&['deposits','records','overview'].includes(route.page)&&phase==='ready')navigate({...route},{replace:true});},{passive:true});
+  // iOS may resume an existing Home Screen window instead of loading its URL.
+  let launchWasHidden=false;
+  document.addEventListener('visibilitychange',()=>{
+    if(!installedApp())return;
+    if(document.visibilityState==='hidden'){launchWasHidden=true;return;}
+    if(document.visibilityState==='visible'&&launchWasHidden){
+      launchWasHidden=false;
+      if(route.page==='home'||route.page==='splash')navigate({page:'splash'},{replace:true,instant:true});
+    }
+  });
   const [hash,query='']=location.hash.slice(1).split('?'),params=new URLSearchParams(query);
-  navigate({page:Object.hasOwn(titles,hash)?hash:'splash',product:products.some(p=>p.id===params.get('product'))?params.get('product'):'m',record:params.get('record')||undefined,status:['提前支取本息','提前续约','到期转存'].includes(params.get('status'))?params.get('status'):'已起息'},{replace:true,instant:true});
+  navigate({page:installedApp()&&hash==='home'?'splash':Object.hasOwn(titles,hash)?hash:'splash',product:products.some(p=>p.id===params.get('product'))?params.get('product'):'m',record:params.get('record')||undefined,status:['提前支取本息','提前续约','到期转存'].includes(params.get('status'))?params.get('status'):'已起息'},{replace:true,instant:true});
 })();
