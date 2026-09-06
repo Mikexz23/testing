@@ -1,11 +1,11 @@
 /* Additional journeys from reference/detials/IMG_4037.mov.
    Screenshot slices preserve supplied artwork, while navigation and state are HTML.
    All slice coordinates use a 390px-wide reference (the source PNGs are 1170px). */
-window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,render,service,choices,goBack,getRoute})=>{
-  const titles={transfer:'转账',income:'收支',credit:'我的信用卡',finance:'理财',funds:'基金',borrow:'借钱',cities:'城市服务',activities:'热门活动',remittance:'境外汇款',forex:'外汇兑换',fxclosed:'购汇委托',all:'全部',community:'社区',wealth:'财富',life:'生活'};
+window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,render,service,choices,showModal,closeModal,goBack,getRoute})=>{
+  const titles={transfer:'转账',income:'收支',incomedetail:'交易详情',credit:'我的信用卡',finance:'理财',funds:'基金',borrow:'借钱',cities:'城市服务',activities:'热门活动',remittance:'境外汇款',forex:'外汇兑换',fxclosed:'购汇委托',all:'全部',community:'社区',wealth:'财富',life:'生活'};
   const timing={transfer:[400,1200],income:[500,2000],credit:[800,1600],finance:[600,800],funds:[600,800],borrow:[500,900],cities:[450,650],activities:[1700,1800],remittance:[650,900],forex:[900,800],fxclosed:[500,0],all:[300,450],community:[400,600],wealth:[450,700],life:[400,700]};
   const P='assets/pages/';
-  let fxSide='购汇',incomeMonth='2026-09',incomeFilter='全部',city='北京',activityTab='最新上线';
+  let fxSide='购汇',incomeMonth='all',incomeFilter='全部',city='北京',activityTab='最新上线';
   const cqw=n=>(n/3.9).toFixed(4)+'cqw';
   const hit=(x,y,w,h,label,go,action,extra='')=>`<button class="reference-hit" style="left:${cqw(x)};top:${cqw(y)};width:${cqw(w)};height:${cqw(h)}" aria-label="${label}" ${go?`data-go="${go}"`:''} ${action?`data-action="${action}"`:''} ${extra}></button>`;
   function slice(file,top,bottom,hits='',alt=''){
@@ -59,8 +59,8 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   function cities(phase){return `${header('城市服务')}<div class="scroll-area city-scroll" data-scroll><p class="city-prompt">请选择您所需的城市服务专区</p>${phase!=='ready'?'<div class="inline-loading"><span class="spinner"></span> 加载中...</div>':Object.entries(cityGroups).map(([letter,list])=>`<section id="city-${letter}"><h2>${letter}</h2>${list.map(name=>`<button data-action="select-city" data-value="${name}">${name}</button>`).join('')}</section>`).join('')}</div><nav class="city-index" aria-label="城市首字母">${Object.keys(cityGroups).map(letter=>`<button data-action="city-index" data-value="${letter}">${letter}</button>`).join('')}</nav>`;}
   const fx=[['🇺🇸','美元','673.59'],['🇭🇰','港币','85.78'],['🇬🇧','英镑','910.81'],['🇦🇺','澳元','485.49'],['🇯🇵','日元','4.58'],['🇪🇺','欧元','782.63'],['🇨🇦','加元','486.98'],['🇸🇬','新元','532.03'],['🇳🇿','纽元','396.20']];
   function forex(phase){return `${header('外汇兑换')}<div class="scroll-area fx-scroll" data-scroll><div class="fx-tabs">${['购汇','结汇'].map(side=>`<button class="${side===fxSide?'selected':''}" data-action="fx-side" data-value="${side}">${side}</button>`).join('')}</div><div class="fx-columns"><span>币种</span><span>汇率走势</span><span>${fxSide==='购汇'?'银行卖出价':'银行买入价'}</span></div>${phase!=='ready'?'<div class="inline-loading"><span class="spinner"></span> 加载中...</div>':fx.map(([flag,name,rate])=>`<button class="fx-row" data-go="fxclosed"><span>${flag} ${name}</span><span class="fx-trend">⌁</span><span>${rate} <i>›</i></span></button>`).join('')}<p class="fx-note">每100外币折合人民币 · 参考录屏展示</p></div><div class="fx-footer"><button data-action="fx-calculator">算汇率</button><button class="primary-button" data-go="fxclosed">去${fxSide}</button></div>`;}
-  const incomeData=[['转账-张迅(7050)',-800,'23:03'],['转账-张迅(1233)',800,'23:03'],['朝朝宝赎回',100,'14:45'],['开户起息，产品代码：XDC…',-100,'09:51'],['全额支取，产品代码：XDC…',100,'09:48'],['开户起息，产品代码：XDC…',-100,'06:10'],['朝朝宝赎回',100,'06:10']];
-  function income(phase){const rows=incomeData.filter(r=>incomeFilter==='全部'||(incomeFilter==='收入'?r[1]>0:r[1]<0));return `${header('收支')}<div class="scroll-area income-scroll" data-scroll>${phase!=='ready'?'<div class="income-loading">一大波数据正在赶来，请耐心等待</div>':`<div class="income-filters"><button data-action="income-month">${incomeMonth.replace('-','.')} ⌄</button><button data-action="income-card">银行卡 ⌄</button><button data-action="income-filter">${incomeFilter==='全部'?'按金额':incomeFilter}</button><button data-action="income-filter">筛选</button></div><section class="income-summary"><div><b>${Number(incomeMonth.slice(5))}<small>月</small></b><button data-action="income-analysis">分析</button></div><div class="income-totals"><span>¥ 5,600.00<small>结余</small></span><i>=</i><span>23,200.00<small>收入</small></span><i>−</i><span>17,600.00<small>支出</small></span></div></section><p class="income-day">昨天</p>${rows.map(([label,amount,time])=>`<button class="income-row" data-action="income-item" data-label="${label}" data-value="${amount}">${icon('paper')}<div><span>${label}</span><small>储蓄卡0813 ${time}</small></div><strong>${amount>0?'+':'−'}¥${money(Math.abs(amount))}</strong></button>`).join('')}`}</div>${miniTabs(['明细','账本'])}`;}
+  const ledger=window.createLedger({header,icon,money,navigate,render,showModal,closeModal,choices,service,getRoute});
+  const income=phase=>ledger.render(phase);
   const allGroups={查询:[['账户总览',null,'account'],['收支明细','income'],['我的账本','income'],['交易查询','records']],财富:[['朝朝宝','finance'],['朝朝盈2号','finance'],['朝朝盈','finance'],['理财','finance'],['基金','funds'],['私享投资','finance'],['存款','deposits'],['保险','wealth'],['黄金','wealth'],['债券','wealth'],['股票','wealth'],['银证期转账','transfer']],转账:[['银行账号转账','transfer'],['手机号转账','transfer'],['转账记录','income']],贷款:[['借钱','borrow'],['闪电贷','borrow'],['信用卡','credit']],跨境金融:[['境外汇款','remittance'],['外汇购汇','forex']]};
   const grid=items=>`<div class="service-grid">${items.map(([label,go,action],i)=>`<button ${go?`data-go="${go}"`:`data-action="${action}"`}>${icon(['clock','pledge','paper','plan'][i%4])}<span>${label}</span></button>`).join('')}</div>`;
   function all(phase){return `${header('全部服务')}<div class="scroll-area all-scroll" data-scroll>${phase!=='ready'?skeleton():`<h2>精选</h2>${slice(P+'IMG_9526.png',115,312,hit(0,0,97.5,95,'账户总览',null,'account')+hit(97.5,0,97.5,95,'基金','funds')+hit(195,0,97.5,95,'存款证明',null,'extra-unavailable','data-label="存款证明"')+hit(292.5,0,97.5,95,'转账','transfer'),'账户总览、基金、存款证明、转账等精选服务')}<nav class="all-categories">${Object.keys(allGroups).map(k=>`<button data-action="all-category" data-value="${k}">${k}</button>`).join('')}</nav>${Object.entries(allGroups).map(([k,items])=>`<section id="all-${k}"><h2>${k}</h2>${grid(items)}</section>`).join('')}`}</div>`;}
@@ -69,13 +69,7 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   function handle(action,b){
     const value=b.dataset.value,label=b.dataset.label;
     if(action==='fx-side'){fxSide=value;refresh();return true;}
-    if(action==='income-filter'){choices('收支类型',['全部','收入','支出'].map(x=>[x,x]),'set-income-filter',incomeFilter);return true;}
-    if(action==='set-income-filter'){incomeFilter=value;navigate({page:'income'},{replace:true});return true;}
-    if(action==='income-month'){choices('选择月份',['2026-09','2026-08','2026-07'].map(x=>[x,x]),'set-income-month',incomeMonth);return true;}
-    if(action==='set-income-month'){incomeMonth=value;navigate({page:'income'},{replace:true});return true;}
-    if(action==='income-card'){service('银行卡','储蓄卡 6214********0813');return true;}
-    if(action==='income-analysis'){service('收支分析','本月收入 ¥23,200.00，支出 ¥17,600.00，结余 ¥5,600.00。');return true;}
-    if(action==='income-item'){service(label,`${Number(value)>0?'收入':'支出'} ¥${money(Math.abs(Number(value)))} · 储蓄卡0813`);return true;}
+    if(ledger.handle(action,b))return true;
     if(action==='city-index'){document.getElementById('city-'+value)?.scrollIntoView({block:'start'});return true;}
     if(action==='select-city'){city=value;service(value+'城市服务','已选择'+value+'。生活服务、热门活动可从生活页查看。');return true;}
     if(action==='all-category'){document.getElementById('all-'+value)?.scrollIntoView({block:'start'});return true;}
@@ -103,6 +97,6 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   }
   const preloaded=new Set();
   function preload(page){if(typeof Image==='undefined')return;const files=configs[page]?[configs[page].file]:page==='all'?['IMG_9526.png']:[];if(page==='finance')files.push('IMG_9515.png');if(page==='home')files.push('首页下.png');for(const file of files){if(preloaded.has(file))continue;preloaded.add(file);const image=new Image();image.src=P+file;}}
-  function reset(){fxSide='购汇';incomeMonth='2026-09';incomeFilter='全部';city='北京';wealthVisible=false;activityTab='最新上线';}
-  return {titles,timing,home,profile,mainTabs,handle,reset,preload,render:(page,phase)=>page==='income'?income(phase):page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
+  function reset(){ledger.reset();fxSide='购汇';incomeMonth='all';incomeFilter='全部';city='北京';wealthVisible=false;activityTab='最新上线';}
+  return {titles,timing,home,profile,mainTabs,handle,reset,preload,render:(page,phase)=>page==='income'?income(phase):page==='incomedetail'?ledger.detail():page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
 };
