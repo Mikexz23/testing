@@ -40,5 +40,5 @@ window.createLedger=({header,icon,money,navigate,render,showModal,closeModal,cho
     const messages={'income-card':['银行卡','储蓄卡 6214********0813'],'ledger-search':['查询收支','请使用月份选择或自定义日期范围查询记录。'],'ledger-book':['账本','暂无账本'],'ledger-category':['分类',selected.amount>0?'他人转入':'投资理财'],'ledger-sub':['开户子账户','一卡通 0813'],'ledger-help':['交易查询',selected.label],'ledger-voucher':['电子回单','参考素材未包含本笔交易的电子回单。']};
     if(messages[action]){service(...messages[action]);return true;}return false;
   }
-  return {render:renderIncome,detail,handle,reset(){month='all';filter='全部';custom=false;excluded.clear();entries.forEach(r=>excluded.add(r.id));}};
+  return {render:renderIncome,detail,handle,resetFilters(){month='all';filter='全部';custom=false;},reset(){month='all';filter='全部';custom=false;excluded.clear();entries.forEach(r=>excluded.add(r.id));}};
 };
