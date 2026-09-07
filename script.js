@@ -1,11 +1,17 @@
 (() => {
   'use strict';
-  // Supplied screenshots define balances/products. Missing detail fields are demo data.
+  // User-confirmed transcription of reference/unnamed.jpg: authoritative product terms.
+  const depositTerms={
+    m:[['2026-09-02',2.75,6613562.25],['2026-01-01',2.75,6492548.36],['2025-01-01',2.75,6318781.86],['2024-01-01',2.95,6137719.14]],
+    '2':[['2026-08-20',2.75,6524980.43],['2025-11-26',2.75,6394588.09],['2024-11-26',2.75,6223414.20],['2023-11-26',2.95,6045084.22]],
+    '5':[['2026-06-15',2.75,2363474.18],['2025-06-15',2.75,2300218.18],['2024-06-15',2.95,2234306.15]]
+  };
+  const termFor=(id,date)=>{const [start,rate,amount]=depositTerms[id].find(r=>r[0]===date)||depositTerms[id][0];return {start,opened:start,rate,amount,end:String(Number(start.slice(0,4))+1)+start.slice(4)};};
   const products = [
-    {id:'m',name:'享定存M',serial:'048069',code:'D23SU71LA048069',opened:'2024-01-01',minimum:1000,amount:6613562.25,rate:2.75,start:'2026-09-02',end:'2027-09-02'},
-    {id:'2',name:'享定期2号',serial:'088169',code:'D23SU718A088169',opened:'2010-11-26',minimum:100000,amount:6524980.43,rate:2.75,start:'2026-08-20',end:'2027-08-20'},
-    {id:'5',name:'享定期5号',serial:'076237',code:'D23SU613A076237',opened:'2024-06-15',minimum:100000,amount:2363474.18,rate:2.75,start:'2026-06-15',end:'2027-06-15'}
-  ];
+    {id:'m',name:'享定存M',serial:'048069',code:'D23SU71LA048069',minimum:1000},
+    {id:'2',name:'享定期2号',serial:'088169',code:'D23SU718A088169',minimum:100000},
+    {id:'5',name:'享定期5号',serial:'076237',code:'D23SU613A076237',minimum:100000}
+  ].map(p=>({...p,...termFor(p.id)}));
   const total=products.reduce((sum,p)=>sum+p.amount,0);
   const money=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   const app=document.getElementById('app'),overlay=document.getElementById('overlay'),phone=document.getElementById('phone');
@@ -43,7 +49,7 @@
   const chevron='<span class="chevron" aria-hidden="true">›</span>';
   const skeleton=()=>'<div class="skeleton-list" aria-label="正在加载存单"><div class="skeleton banner"></div>'+[1,2,3].map(()=>'<div class="skeleton-row"><i class="skeleton square"></i><div><i class="skeleton line"></i><i class="skeleton line short"></i><i class="skeleton line"></i></div></div>').join('')+'</div>';
   const navTabs=active=>`<nav class="deposit-tabs" aria-label="存款导航"><button data-go="products" class="${active==='products'?'selected':''}" ${active==='products'?'aria-current="page"':''}>${icon('box')}<span>产品</span></button><button data-go="deposits" class="${active==='deposits'?'selected':''}" ${active==='deposits'?'aria-current="page"':''}>${icon('holding')}<span>持仓</span></button></nav>`;
-  const extra=window.createExtraPages({header,icon,skeleton,money,total,products,navigate,render,service,choices,showModal,closeModal,goBack,getRoute:()=>route});
+  const extra=window.createExtraPages({header,icon,skeleton,money,total,products,termFor,navigate,render,service,choices,showModal,closeModal,goBack,getRoute:()=>route});
   Object.assign(titles,extra.titles);
   function home(){return extra.home();}
   function login(){return extra.profile();}
@@ -51,22 +57,22 @@
   function depositPage(){const loading=phase!=='ready';return `${header('我的存单','red')}<div class="scroll-area deposits-scroll" data-scroll><div class="deposit-red"></div><section class="deposit-balance card"><div><strong>${loading?'--':money(total)}</strong><button data-action="cards">${card} <span class="triangle">▾</span></button></div><p>存单总本金(元)</p></section><nav class="deposit-actions card" aria-label="存单服务">${[['reserve','已预留额度','reserved'],['clock','交易记录','records'],['paper','纸质存单','paper'],['pledge','存单质押','pledge'],['plan','协议/计划','plan']].map(([i,label,a])=>`<button data-action="${a}">${icon(i)}<span>${label}</span></button>`).join('')}</nav>${loading?skeleton():`<button class="recommendation card" data-go="products"><em>推荐</em><span>定期本金兑付率100%，持有更安心</span>${chevron}</button><section class="holdings card"><button class="holdings-title" data-action="collapse" data-group="holdings" aria-expanded="${!collapsed.holdings}"><b>招行特色 <span class="triangle">${collapsed.holdings?'▾':'▴'}</span></b><strong>¥${money(total)}</strong></button>${collapsed.holdings?'':products.map(p=>`<button class="holding-row" data-go="holding" data-product="${p.id}" aria-label="查看${p.name}持仓详情"><div><span>${p.name} ${p.serial}</span><strong>${money(p.amount)}</strong></div><div class="muted"><span>到期日：${p.end}</span><span>本金(元)</span></div><div class="muted">年利率：<span class="red-text">${p.rate.toFixed(2)}%</span></div></button>`).join('')}</section>`}</div>${navTabs('deposits')}`;}
   const detailRows=rows=>`<dl class="detail-rows">${rows.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
   const depositNotes=()=>`<div class="notes deposit-notes"><p>说明:</p><p>1、本业务依照《存款保险条例》有关法律法规，纳入存款保险保障范围。</p><p>2、客户承诺存入资金为合法所有，且资金来源合法，并非任何犯罪或其他任何非法活动所得及/或其产生的收益。</p><p>3、如需咨询服务，请拨打电话 95555。如您所在地无招商银行营业网点，投诉电话请拨打0755-95555-7。</p><p>4、客户不得利用本金融产品和服务从事各类违法活动，或以资金及所得收益支持、资助或变相帮助从事非法活动；如发现或有合理理由怀疑客户或客户资金存在洗钱、恐怖融资、逃税等嫌疑，我行有权提前终止服务，造成客户损失的，我行不承担责任。</p></div>`;
-  function historicalProduct(){const record=historyData.find(r=>r.id===route.record);return record?{...record.p,amount:record.amount,rate:record.p.id==='2'||['2024-01-01','2024-06-15'].includes(record.date)?2.95:2.75,start:record.date,end:String(Number(record.date.slice(0,4))+1)+record.date.slice(4)}:selected();}
-  function holding(){const p=historicalProduct();return `${header('持仓详情')}<div class="scroll-area detail-scroll latest-holding" data-scroll><section class="holding-summary"><button class="holding-product-link" data-go="productdetail" data-product="${p.id}"><span>${p.name}</span><strong>${p.code}</strong></button><div class="summary-columns"><div><strong class="red-text">${money(p.amount)}</strong><small>存单本金(元)</small></div><div><strong>${p.end.replaceAll('-','.')}</strong><small>到期日</small></div></div></section><section class="information"><h2>存入信息</h2>${detailRows([['银行卡','<span class="masked-card">6214********0813</span> <button class="view-card" data-action="view-card">查看卡号</button>'],['币种','人民币'],['年利率',p.rate.toFixed(2)+'%'],['存期','12个月'],['开户日',p.opened],['可用本金',money(p.amount)+'元']])}</section><section class="maturity"><div class="row"><span>到期资金安排</span><span>到期转存</span></div></section>${depositNotes()}</div>`;}
-  // Exact historical amounts, grouping and dates from reference/new resource/14-定存交易记录new.png.
+  function historicalProduct(){const record=historyData.find(r=>r.id===route.record);return record?{...record.p,...termFor(record.p.id,record.date)}:selected();}
+  function holding(){const p=historicalProduct();return `${header('持仓详情')}<div class="scroll-area detail-scroll latest-holding" data-scroll><section class="holding-summary"><button class="holding-product-link" data-go="productdetail" data-product="${p.id}" ${route.record!==undefined?`data-record="${route.record}"`:''}><span>${p.name}</span><strong>${p.code}</strong></button><div class="summary-columns"><div><strong class="red-text">${money(p.amount)}</strong><small>存单本金(元)</small></div><div><strong>${p.end.replaceAll('-','.')}</strong><small>到期日</small></div></div></section><section class="information"><h2>存入信息</h2>${detailRows([['银行卡','<span class="masked-card">6214********0813</span> <button class="view-card" data-action="view-card">查看卡号</button>'],['币种','人民币'],['年利率',p.rate.toFixed(2)+'%'],['存期','12个月'],['开户日',p.opened],['可用本金',money(p.amount)+'元']])}</section><section class="maturity"><div class="row"><span>到期资金安排</span><span>到期转存</span></div></section>${depositNotes()}</div>`;}
+  // Preserve record IDs and statuses; all financial fields come from the confirmed terms.
   const historyData=[
-    ['m',6613562.25,'提前续约','2026-09-02'],['m',6613562.25,'已起息','2026-09-02'],
-    ['2',6524980.43,'提前续约','2026-08-20'],['2',6524980.43,'已起息','2026-08-20'],
-    ['5',2363474.18,'到期转存','2026-06-15'],['m',6493035.28,'到期转存','2026-01-01'],
-    ['2',6394558.09,'到期转存','2025-11-26'],['5',2300218.18,'到期转存','2025-06-15'],
-    ['m',6319255.75,'到期转存','2025-01-01'],['2',6223414.20,'到期转存','2024-11-26'],
-    ['5',2234306.15,'已起息','2024-06-15'],['m',6138179.46,'已起息','2024-01-01'],['2',6054797.67,'到期转存','2023-11-26']
-  ].map(([id,amount,status,date,month],i)=>({id:String(i),p:products.find(p=>p.id===id),amount,status,date,month:month||date.slice(0,7)}));
+    ['m','提前续约','2026-09-02'],['m','已起息','2026-09-02'],
+    ['2','提前续约','2026-08-20'],['2','已起息','2026-08-20'],
+    ['5','到期转存','2026-06-15'],['m','到期转存','2026-01-01'],
+    ['2','到期转存','2025-11-26'],['5','到期转存','2025-06-15'],
+    ['m','到期转存','2025-01-01'],['2','到期转存','2024-11-26'],
+    ['5','已起息','2024-06-15'],['m','已起息','2024-01-01'],['2','到期转存','2023-11-26']
+  ].map(([id,status,date],i)=>({id:String(i),p:products.find(p=>p.id===id),...termFor(id,date),status,date,month:date.slice(0,7)}));
   let recordPeriod='近三年';
   function recordItems(){return historyData.filter(r=>(filterStatus==='全部'||r.status===filterStatus)&&(filterProduct==='all'||r.p.id===filterProduct)&&(recordPeriod==='近三年'||r.month>=(recordPeriod==='近一年'?'2025-09':'2026-06')));}
   function records(){const items=recordItems();return `${header('交易记录')}<div class="scroll-area records-scroll" data-scroll><div class="filters"><button data-action="record-period">${recordPeriod} <span>⌄</span></button><button data-action="filter-product">${filterProduct==='all'?'全部产品':products.find(p=>p.id===filterProduct).name} <span>⌄</span></button></div>${phase!=='ready'?'<div class="inline-loading" role="status"><span class="spinner"></span> 加载中...</div>':`<div class="records-list">${items.map((r,i)=>`${i===0||r.month!==items[i-1].month?`<p class="month">${r.month}</p>`:''}<button class="transaction-row" data-go="${r.status==='提前续约'?'transaction':'holding'}" data-product="${r.p.id}" data-status="${r.status}" data-record="${r.id}"><div><span>${r.p.name} ${r.p.serial}</span><span>¥${money(r.amount)}</span></div><div><span>${r.status}</span><span>${r.date}</span></div></button>`).join('')||'<p class="empty">暂无交易记录</p>'}</div><div class="notes"><p>说明：</p><p>1.整存整取的历史委托此处未包括，请前往收支明细查询。通知存款自2024年11月8日起纳入此处查询，在此之前的历史交易请前往收支明细查询。</p><p>2.本页面展示以往购买的、全额支取或已到期还本付息的招行特色产品，部分支取记录可在活期交易中查询。</p><p>3.结构性存款仅支持查询2020.01.01以来的交易记录及详情，如需查询更早的历史记录请前往收支明细查询。</p></div>`}</div>`;}
   function transaction(){const p=historicalProduct();return `${header('交易详情')}<div class="scroll-area transaction-scroll latest-transaction" data-scroll>${detailRows([['银行卡','6214********0813'],['产品代码',p.code],['产品名称',p.name],['币种','人民币'],['委托金额（元）',money(p.amount)],['利率',p.rate.toFixed(2)+'%'],['存期','1年'],['开户日',p.opened],['起息日',p.start],['到期日',p.end],['委托状态',route.status]])}</div>`;}
-  function productDetail(){const p=selected();return `${header(p.name+'<small class="product-code">'+p.code+'</small>','product-detail-header')}<div class="scroll-area product-detail-scroll" data-scroll><section class="product-rate"><div><strong>${p.rate.toFixed(2)}%</strong><small>年利率</small></div><div><b>1年期</b><small>期限</small></div></section><section class="product-features"><h2>产品特点</h2>${detailRows([['制度保障','本产品为存款产品，人民币50万元内依照存款保险条例纳入存款保险保障范围'],['无手续费','存入、支取均不收取任何费用'],['当日起息','成功存入后当日起息，<em>周末与节假日利息不间断</em>']])}</section><section class="product-rules"><h2>交易规则</h2>${detailRows([['存入规则',money(p.minimum).replace('.00','')+'元起存，当日存入成功当日起息。'],['提前支取','提前支取，起息日30天后，按天计算利息。'],['到期规则','到期日按照产品年利率计息，一个自然日内本息自动入账，可选到期转存，本息到期日起息。']])}</section>${depositNotes()}</div>`;}
+  function productDetail(){const p=historicalProduct();return `${header(p.name+'<small class="product-code">'+p.code+'</small>','product-detail-header')}<div class="scroll-area product-detail-scroll" data-scroll><section class="product-rate"><div><strong>${p.rate.toFixed(2)}%</strong><small>年利率</small></div><div><b>1年期</b><small>期限</small></div></section><section class="product-features"><h2>产品特点</h2>${detailRows([['制度保障','本产品为存款产品，人民币50万元内依照存款保险条例纳入存款保险保障范围'],['无手续费','存入、支取均不收取任何费用'],['当日起息','成功存入后当日起息，<em>周末与节假日利息不间断</em>']])}</section><section class="product-rules"><h2>交易规则</h2>${detailRows([['存入规则',money(p.minimum).replace('.00','')+'元起存，当日存入成功当日起息。'],['提前支取','提前支取，起息日30天后，按天计算利息。'],['到期规则','到期日按照产品年利率计息，一个自然日内本息自动入账，可选到期转存，本息到期日起息。']])}</section>${depositNotes()}</div>`;}
   function productPage(){return `${header('存款产品','red')}<div class="scroll-area product-scroll" data-scroll><p class="product-intro">招行特色存款</p>${products.map(p=>`<button class="card product-card" data-go="productdetail" data-product="${p.id}"><b>${p.name}</b><div><strong class="red-text">${p.rate.toFixed(2)}<small>%</small></strong><span>12个月 ${chevron}</span></div><small>年利率 · 查看产品详情</small></button>`).join('')}</div>${navTabs('products')}`;}
   function render(restoreScroll=0){
     const page=route.page;phone.dataset.page=page;phone.classList.toggle('dark',['home','login'].includes(page));phone.classList.toggle('busy',phase!=='ready');
@@ -87,7 +93,7 @@
     extra.enter?.(normalized.page,route.page,{back,replace});
     route=normalized;
     extra.preload(route.page);
-    if(!historyEvent){const state={replica:true,route,stack:[...stack]};history[replace?'replaceState':'pushState'](state,'','#'+route.page+(['holding','transaction','incomedetail','productdetail'].includes(route.page)?'?product='+route.product+(['holding','transaction','incomedetail'].includes(route.page)?'&status='+encodeURIComponent(route.status)+(route.record!==undefined?'&record='+encodeURIComponent(route.record):''):''):''));}
+    if(!historyEvent){const state={replica:true,route,stack:[...stack]};history[replace?'replaceState':'pushState'](state,'','#'+route.page+(['holding','transaction','incomedetail','productdetail'].includes(route.page)?'?product='+route.product+(['holding','transaction','incomedetail','productdetail'].includes(route.page)?'&status='+encodeURIComponent(route.status)+(route.record!==undefined?'&record='+encodeURIComponent(route.record):''):''):''));}
     const scroll=back?(positions[key(route)]||0):0;
     phone.classList.remove('enter-forward','enter-back');void phone.offsetWidth;phone.classList.add(back?'enter-back':'enter-forward');
     if(instant||['home','login','splash'].includes(route.page)){phase='ready';render(scroll);if(route.page==='splash')later(()=>navigate({page:'home'},{replace:true}),1000);return;}
@@ -166,5 +172,8 @@
     }
   });
   const [hash,query='']=location.hash.slice(1).split('?'),params=new URLSearchParams(query);
+  if(history.state?.replica&&history.state.route?.page===hash&&Array.isArray(history.state.stack)){
+    stack=history.state.stack.filter(r=>r&&Object.hasOwn(titles,r.page)).map(r=>({...r}));
+  }
   navigate({page:installedApp()&&hash==='home'?'splash':Object.hasOwn(titles,hash)?hash:'splash',product:products.some(p=>p.id===params.get('product'))?params.get('product'):'m',record:params.get('record')||undefined,status:['提前支取本息','提前续约','到期转存'].includes(params.get('status'))?params.get('status'):'已起息'},{replace:true,instant:true});
 })();
