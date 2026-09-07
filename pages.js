@@ -102,7 +102,7 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   const myFiles={my:'my-home.png',bankcards:'bank-cards.png',debitcard:'debit-card.png',coupons:'coupons.png',points:'points.png'};
   let pinLength=0,todoYear=2026,todoMonth=10,todoDay=5;
   function myHits(page){
-    if(page==='my')return hit(0,4,60,48,'登出',null,'restart')+hit(285,4,45,48,'搜索','all')+
+    if(page==='my')return hit(0,4,60,48,'登出',null,'restart')+hit(75,59,130,51,'个人主页','bankcards')+
       [['bankcards','银行卡'],['todo','待办'],['coupons','卡券'],['points','积分']].map(([go,label],i)=>hit(18+i*89,115,89,67,label,go)).join('')+
       hit(15,194,360,116,'账户总览','overview')+hit(15,394,180,116,'信用卡','credit')+hit(199,394,176,116,'贷款','borrow')+hit(15,714,360,60,'我的养老','wealth')+hit(15,774,360,58,'全资产','overview')+
       ['数字人民币','去看房','风险评估','购车分期','我的网点','我的收藏'].map((label,i)=>hit(30+i%2*170,894+Math.floor(i/2)*65,160,57,label,null,'my-service',`data-label="${label}"`)).join('');
@@ -133,7 +133,7 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   }
   function cardInfo(){showModal('<button class="modal-close" data-action="close" aria-label="关闭">×</button><h2>卡号信息</h2><p>户名: 张迅</p><p>卡号: 6214 8610 9787 0813</p><p>开户行: 招商银行北京双榆树支行</p><p>身份证: 110108198708136334</p>','card-information');}
   function handleMy(action,b){
-    if(action==='debit-pin'){debitPin();return true;}
+    if(action==='debit-pin'||action==='view-card'){debitPin();return true;}
     if(action==='debit-pin-key'){
       const v=b.dataset.value;
       if(v==='完成'){if(pinLength===6)cardInfo();return true;}

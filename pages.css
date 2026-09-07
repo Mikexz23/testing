@@ -131,7 +131,7 @@
 .calendar-days{grid-auto-rows:18cqw}
 .my-page-scroll{top:var(--safe-top);padding-bottom:calc(24cqw + var(--safe-bottom));background:#f7f7f7}
 .my-total{z-index:2;position:absolute;left:7.7cqw;top:67.7cqw;width:84cqw;height:10cqw;background:#fff;text-align:left;font-family:var(--app-font);font-size:6.6cqw;letter-spacing:.04cqw;color:#111;font-weight:600}
-.my-gear-cover{position:absolute;top:1cqw;right:2cqw;width:12cqw;height:13cqw;background:#000;pointer-events:none}
+.my-gear-cover{position:absolute;top:1cqw;right:2cqw;width:26cqw;height:13cqw;background:#000;pointer-events:none}
 .debit-live-hero{position:absolute;z-index:2;left:0;top:0;width:100%;height:38.5cqw;background:linear-gradient(115deg,#d2d6dc,#d7d4c9 60%,#e7d9cf)}
 .debit-live-balance{position:absolute;left:0;top:0;width:51cqw;height:20cqw;padding:4cqw 0 0 4cqw;display:flex;flex-direction:column;align-items:flex-start;text-align:left}
 .debit-live-card-art{position:absolute;right:4cqw;top:5cqw;width:45cqw;height:28cqw;border-radius:1cqw;background:url('assets/pages/debit-card.png') -51cqw -28.46cqw/100cqw auto no-repeat}

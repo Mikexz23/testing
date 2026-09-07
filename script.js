@@ -125,7 +125,7 @@
     if(extra.handle(action,b))return;
     if(action==='record-period'){choices('查询时间',['近三个月','近一年','近三年'].map(x=>[x,x]),'select-period',recordPeriod);return;}
     if(action==='select-period'){recordPeriod=b.dataset.value;navigate({...route},{replace:true});return;}
-    if(action==='view-card'){extra.cardInfo();return;}
+
     if(action==='contact'){service('小招','您好，请问有什么可以帮您？');return;}
     if(action==='records'){navigate({page:'records'});return;}
     if(action==='collapse'){saveScroll();collapsed[b.dataset.group]=!collapsed[b.dataset.group];render(positions[key(route)]);return;}
