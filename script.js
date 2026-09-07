@@ -125,7 +125,7 @@
     if(extra.handle(action,b))return;
     if(action==='record-period'){choices('查询时间',['近三个月','近一年','近三年'].map(x=>[x,x]),'select-period',recordPeriod);return;}
     if(action==='select-period'){recordPeriod=b.dataset.value;navigate({...route},{replace:true});return;}
-    if(action==='view-card'){showModal('<button class="modal-close" data-action="close" aria-label="关闭">×</button><h2>卡号信息</h2><p>户名: 张迅</p><p>卡号: 6214 8610 9787 0813</p><p>开户行: 招商银行北京双榆树支行</p><p>身份证: 110108198708136334</p>','card-information');return;}
+    if(action==='view-card'){extra.cardInfo();return;}
     if(action==='contact'){service('小招','您好，请问有什么可以帮您？');return;}
     if(action==='records'){navigate({page:'records'});return;}
     if(action==='collapse'){saveScroll();collapsed[b.dataset.group]=!collapsed[b.dataset.group];render(positions[key(route)]);return;}
