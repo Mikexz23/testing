@@ -121,4 +121,4 @@
 @media(prefers-reduced-motion:reduce){.face-button.scanning .face-orbit,.face-button.scanning .face-orbit::before{animation:none}}
 /* Fixed dot geometry avoids wide spacing from different device fonts. */
 .page-header button[data-action="menu"],.home-search>button[data-action="menu"]{font-size:0!important;letter-spacing:0}
-.page-header button[data-action="menu"]::before,.home-search>button[data-action="menu"]::before{content:"";display:block;width:.65cqw;height:.65cqw;margin:auto;border-radius:50%;background:currentColor;box-shadow:-1.65cqw 0 0 currentColor,1.65cqw 0 0 currentColor;flex:none}
+.page-header button[data-action="menu"]::before,.home-search>button[data-action="menu"]::before{content:"";display:block;width:.65cqw;height:.65cqw;margin:auto;border-radius:50%;background:currentColor;box-shadow:-1.9cqw 0 0 currentColor,1.9cqw 0 0 currentColor;flex:none}
