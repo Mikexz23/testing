@@ -99,7 +99,7 @@
     later(()=>{phase='ready';render(scroll);app.querySelector('h1')?.focus({preventScroll:true})},duration);
   }
   let backPending=false;
-  function goBack(){if(backPending)return;if(modal){closeModal();return;}if(stack.length){backPending=true;history.back();return;}navigate({page:{holding:'deposits',productdetail:'products',transaction:'records',incomedetail:'income',records:'deposits',deposits:'overview',overview:'home',products:'deposits',login:'home',fxclosed:'forex'}[route.page]||'home'},{back:true,replace:true});}
+  function goBack(){if(backPending)return;if(modal){closeModal();return;}if(stack.length){backPending=true;history.back();return;}navigate({page:{holding:'deposits',productdetail:'products',transaction:'records',incomedetail:'income',records:'deposits',deposits:'overview',overview:'home',products:'deposits',login:'home',fxclosed:'forex',my:'home',bankcards:'my',debitcard:'bankcards',todo:'my',coupons:'my',points:'my'}[route.page]||'home'},{back:true,replace:true});}
   function showModal(content,type='sheet'){
     returnFocus=document.activeElement;modal=type;app.inert=true;
     overlay.innerHTML=`<div class="modal-backdrop"><section class="modal ${type}" role="dialog" aria-modal="true" aria-label="${type==='face'?'登录验证':'选项'}">${content}</section></div>`;overlay.querySelector('button')?.focus();

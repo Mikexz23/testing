@@ -4,6 +4,8 @@
 window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,render,service,choices,showModal,closeModal,goBack,getRoute})=>{
   const titles={transfer:'转账',income:'收支',incomedetail:'交易详情',credit:'我的信用卡',finance:'理财',funds:'基金',borrow:'借钱',cities:'城市服务',activities:'热门活动',remittance:'境外汇款',forex:'外汇兑换',fxclosed:'购汇委托',all:'全部',community:'社区',wealth:'财富',life:'生活'};
   const timing={transfer:[400,1200],income:[500,2000],credit:[800,1600],finance:[600,800],funds:[600,800],borrow:[500,900],cities:[450,650],activities:[1700,1800],remittance:[650,900],forex:[900,800],fxclosed:[500,0],all:[300,450],community:[400,600],wealth:[450,700],life:[400,700]};
+  Object.assign(titles,{my:'我的',bankcards:'银行卡',debitcard:'消费卡',todo:'待办',coupons:'我的卡券',points:'我的积分'});
+  Object.assign(timing,{my:[180,350],bankcards:[300,550],debitcard:[250,500],todo:[250,400],coupons:[350,650],points:[400,850]});
   const P='assets/pages/';
   let fxSide='购汇',incomeMonth='all',incomeFilter='全部',city='北京',activityTab='最新上线';
   const cqw=n=>(n/3.9).toFixed(4)+'cqw';
@@ -11,7 +13,7 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
   function slice(file,top,bottom,hits='',alt=''){
     return `<div class="reference-slice" style="height:${cqw(bottom-top)}"><img src="${file}" alt="${alt}" width="1170" height="2532" style="top:-${cqw(top)}">${hits}</div>`;
   }
-  const mainTabs=active=>`<nav class="main-tabs" aria-label="主导航">${[['home','首页','home'],['community','社区','community'],['wealth','财富','wealth'],['life','生活','life'],['overview','我的','person']].map(([page,label,i])=>`<button data-go="${page}" class="${active===page?'selected':''}" ${active===page?'aria-current="page"':''}>${tabIcon(i)}<span>${label}</span></button>`).join('')}</nav>`;
+  const mainTabs=active=>`<nav class="main-tabs" aria-label="主导航">${[['home','首页','home'],['community','社区','community'],['wealth','财富','wealth'],['life','生活','life'],['my','我的','person']].map(([page,label,i])=>`<button data-go="${page}" class="${active===page?'selected':''}" ${active===page?'aria-current="page"':''}>${tabIcon(i)}<span>${label}</span></button>`).join('')}</nav>`;
   function tabIcon(name){const p={home:'<path d="m3 11 9-8 9 8M6 9v12h12V9M10 21v-7h4v7"/>',community:'<ellipse cx="12" cy="12" rx="7" ry="10" transform="rotate(40 12 12)"/><path d="M3 20 21 4"/>',wealth:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m7 16 4-5 3 2 4-6"/>',life:'<path d="M4 3h16v6a3 3 0 0 0 0 6v6H4v-6a3 3 0 0 0 0-6zM9 5v14"/>',person:'<circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/>'};return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${p[name]}</svg>`;}
   const miniTabs=(labels,active=0)=>`<nav class="mini-tabs" aria-label="页面导航">${labels.map((label,i)=>`<button class="${i===active?'selected':''}" data-action="extra-tab" data-label="${label}">${icon(i?'holding':'box')}<span>${label}</span></button>`).join('')}</nav>`;
   function home(){
@@ -70,6 +72,7 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
     const value=b.dataset.value,label=b.dataset.label;
     if(action==='fx-side'){fxSide=value;refresh();return true;}
     if(ledger.handle(action,b))return true;
+    if(handleMy(action,b))return true;
     if(action==='city-index'){document.getElementById('city-'+value)?.scrollIntoView({block:'start'});return true;}
     if(action==='select-city'){city=value;service(value+'城市服务','已选择'+value+'。生活服务、热门活动可从生活页查看。');return true;}
     if(action==='all-category'){document.getElementById('all-'+value)?.scrollIntoView({block:'start'});return true;}
@@ -95,8 +98,61 @@ window.createExtraPages=({header,icon,skeleton,money,total,products,navigate,ren
     };
     if(messages[action]){service(...messages[action]);return true;}return false;
   }
+  // September 7 reference journey. Native status bars are cropped out of each image.
+  const myFiles={my:'my-home.png',bankcards:'bank-cards.png',debitcard:'debit-card.png',coupons:'coupons.png',points:'points.png'};
+  let pinLength=0,todoYear=2026,todoMonth=10,todoDay=5;
+  function myHits(page){
+    if(page==='my')return hit(0,4,60,48,'登出',null,'restart')+hit(285,4,45,48,'搜索','all')+hit(333,4,50,48,'设置',null,'my-settings')+
+      [['bankcards','银行卡'],['todo','待办'],['coupons','卡券'],['points','积分']].map(([go,label],i)=>hit(18+i*89,115,89,67,label,go)).join('')+
+      hit(15,194,360,116,'账户总览','overview')+hit(15,394,180,116,'信用卡','credit')+hit(199,394,176,116,'贷款','borrow')+hit(15,714,360,60,'我的养老','wealth')+hit(15,774,360,58,'全资产','overview')+
+      ['数字人民币','去看房','风险评估','购车分期','我的网点','我的收藏'].map((label,i)=>hit(30+i%2*170,894+Math.floor(i/2)*65,160,57,label,null,'my-service',`data-label="${label}"`)).join('');
+    if(page==='bankcards')return hit(275,39,100,38,'添加银行卡',null,'my-add-card')+hit(10,94,370,246,'消费卡','debitcard')+hit(10,398,370,350,'信用卡','credit');
+    if(page==='debitcard')return hit(5,20,174,54,'可用余额','overview')+hit(89,106,78,40,'查看卡号',null,'debit-pin')+hit(10,188,238,35,'开户行',null,'my-branch')+hit(260,187,120,38,'修改卡片名称',null,'my-card-name')+hit(10,250,370,51,'快捷支付',null,'my-quick-pay')+hit(70,430,250,30,'闲钱投资','funds')+hit(12,505,181,105,'亲友转账','transfer')+hit(197,505,181,105,'还款计划','credit')+hit(12,623,181,115,'理财计划','finance')+hit(197,623,181,115,'生活缴费','life');
+    if(page==='coupons')return hit(10,5,370,55,'五险一金专享礼','activities')+hit(10,65,180,142,'财富福利社','activities')+hit(195,65,180,68,'现金红包',null,'my-redpacket')+hit(195,141,180,67,'数字人民币红包',null,'my-redpacket')+hit(100,515,195,35,'查看非可使用券',null,'my-used-coupons');
+    if(page==='points')return hit(270,54,112,70,'积分账单',null,'my-points-bill')+['积分商城','推荐办卡','星巴克卡','排行榜','奈雪优惠'].map((label,i)=>hit(i*78,137,78,95,label,null,'my-service',`data-label="${label}"`)).join('')+hit(5,320,380,420,'查看积分商品',null,'my-points-product');
+    return '';
+  }
+  function myPage(page,phase){
+    if(page==='todo')return todoPage(phase);
+    const isMy=page==='my',isCoupons=page==='coupons';
+    const bar=isMy?'<div class="native-background my-native"></div>':header(titles[page],page==='points'?'points-header':page==='debitcard'?'debit-header':'').replace('<small>37</small>',page==='points'||isCoupons?'':'<small>52</small>').replace('</div></header>',(['bankcards','debitcard'].includes(page)?'<button class="new-header-assistant" data-action="my-service" data-label="小招助手" aria-label="小招助手">☻</button>':'')+'</div></header>');
+    const bottom=isMy?mainTabs('my'):isCoupons?`<nav class="mini-tabs coupon-tabs"><button class="selected" data-action="my-coupon-tab" data-value="tickets">${icon('paper')}<span>票券</span></button><button data-action="my-coupon-tab" data-value="cards">${icon('holding')}<span>卡证</span></button></nav>`:'';
+    let content=phase!=='ready'?skeleton():slice(P+myFiles[page],isMy?44:92,isMy?1125:isCoupons?754:820,myHits(page),titles[page]);
+    if(isMy&&phase==='ready')content+=`<button class="my-total" data-go="overview" aria-label="账户总览 总资产">¥ ${money(total+359.52)}</button>`;
+    return `${bar}<div class="scroll-area new-page-scroll ${isMy?'my-page-scroll':''} ${isCoupons?'coupon-scroll':''}" data-scroll>${content}</div>${bottom}`;
+  }
+  function todoPage(phase){
+    const first=(new Date(todoYear,todoMonth-1,1).getDay()+6)%7,days=new Date(todoYear,todoMonth,0).getDate();
+    return `${header(`${todoYear}年${todoMonth}月`,'todo-header').replace('data-action="menu"','data-action="my-add-reminder"').replace('···<small>37</small>','＋')}<div class="scroll-area todo-scroll" data-scroll>${phase!=='ready'?skeleton():`<nav class="calendar-month"><button data-action="todo-month" data-value="-1" aria-label="上个月">‹</button><button data-action="my-add-reminder" aria-label="添加待办">＋</button><button data-action="todo-month" data-value="1" aria-label="下个月">›</button></nav><div class="calendar-week">${['一','二','三','四','五','六','日'].map(d=>`<span>${d}</span>`).join('')}</div><div class="calendar-days">${'<span></span>'.repeat(first)}${Array.from({length:days},(_,i)=>`<button data-action="todo-day" data-value="${i+1}" class="${todoDay===i+1?'selected':''}">${i+1}${todoYear===2026&&todoMonth===10&&i===4?'<small>风评到期</small>':''}</button>`).join('')}</div><section class="todo-event">${todoYear===2026&&todoMonth===10&&todoDay===5?'<h2>风评到期</h2><p>当前风评结果：A5</p><p>请及时进行风险评估，避免影响财富产品购买</p><button data-action="my-service" data-label="风险评估">去评估</button>':'<p>当日暂无待办事项</p>'}</section><p class="todo-note">以上事项如已处理请您忽略</p>`}</div>`;
+  }
+  function debitPin(){
+    pinLength=0;
+    showModal(`<div class="pin-dialog"><button class="modal-close" data-action="close" aria-label="关闭">×</button><h2>请输入取款密码</h2><p>请输入一卡通****0813取款密码</p><div class="pin-boxes" aria-label="演示密码输入">${'<span></span>'.repeat(6)}</div><button data-action="debit-pin-confirm" class="pin-confirm" disabled>确定</button></div><div class="pin-keyboard"><p>招商银行安全输入 <small>· 本地演示，请勿输入真实密码</small></p><div>${['1','2','3','4','5','6','7','8','9','完成','0','⌫'].map(v=>`<button data-action="debit-pin-key" data-value="${v}">${v}</button>`).join('')}</div></div>`,'debit-pin-modal');
+  }
+  function cardInfo(){showModal('<button class="modal-close" data-action="close" aria-label="关闭">×</button><div class="debit-info-content"><p>卡号信息</p><p>户名：张迅</p><p>卡号：6214 8610 9887 0813</p><p>开户行：招商银行北京双榆树支行</p></div><div class="debit-copy-actions"><button data-action="debit-copy" data-value="all">复制全部</button><button data-action="debit-copy" data-value="number">仅复制卡号</button></div>','debit-information');}
+  function handleMy(action,b){
+    if(action==='debit-pin'){debitPin();return true;}
+    if(action==='debit-pin-key'){
+      const v=b.dataset.value;
+      if(v==='完成'){if(pinLength===6)cardInfo();return true;}
+      pinLength=v==='⌫'?Math.max(0,pinLength-1):Math.min(6,pinLength+1);
+      document.querySelectorAll('.pin-boxes span').forEach((el,i)=>{el.textContent=i<pinLength?'●':'';});
+      document.querySelector('.pin-confirm').disabled=pinLength!==6;return true;
+    }
+    if(action==='debit-pin-confirm'){if(pinLength===6)cardInfo();return true;}
+    if(action==='debit-copy'){
+      const value=b.dataset.value==='all'?'户名：张迅\n卡号：6214 8610 9887 0813\n开户行：招商银行北京双榆树支行':'6214861098870813';
+      if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).then(()=>{b.textContent='已复制';}).catch(()=>{b.textContent='请长按卡号复制';});else b.textContent='请长按卡号复制';return true;
+    }
+    if(action==='todo-month'){todoMonth+=Number(b.dataset.value);if(todoMonth===0){todoMonth=12;todoYear--;}if(todoMonth===13){todoMonth=1;todoYear++;}todoDay=1;refresh();return true;}
+    if(action==='todo-day'){todoDay=Number(b.dataset.value);refresh();return true;}
+    if(action==='my-coupon-tab'){if(b.dataset.value==='cards')service('我的卡证','暂无卡证');return true;}
+    if(action==='my-service'){service(b.dataset.label,'参考素材未包含此服务的后续页面。');return true;}
+    const messages={'my-settings':['设置','可通过左上角登出结束本次体验。'],'my-add-card':['添加银行卡','本地演示不绑定真实银行卡。'],'my-branch':['开户行','招商银行北京双榆树支行'],'my-card-name':['卡片名称','消费卡'],'my-quick-pay':['快捷支付','支付宝 · 微信支付 · Apple Pay'],'my-redpacket':['红包','您还没有红包哦'],'my-used-coupons':['非可使用券','暂无已使用或已过期票券'],'my-points-bill':['积分账单','可用积分 57848，永久有效。参考素材未提供账单明细。'],'my-points-product':['积分商品','参考素材未提供商品详情；本地演示不兑换或下单。'],'my-add-reminder':['添加待办','参考素材未提供新增待办页面。']};
+    if(messages[action]){service(...messages[action]);return true;}return false;
+  }
   const preloaded=new Set();
-  function preload(page){if(typeof Image==='undefined')return;const files=configs[page]?[configs[page].file]:page==='all'?['IMG_9526.png']:[];if(page==='finance')files.push('IMG_9515.png');if(page==='home')files.push('首页下.png');for(const file of files){if(preloaded.has(file))continue;preloaded.add(file);const image=new Image();image.src=P+file;}}
-  function reset(){ledger.reset();fxSide='购汇';incomeMonth='all';incomeFilter='全部';city='北京';wealthVisible=false;activityTab='最新上线';}
-  return {titles,timing,home,profile,mainTabs,handle,reset,preload,enter:(page,previous,{replace})=>{if(page==='income'&&previous!=='income'&&previous!=='incomedetail'&&!replace)ledger.resetFilters();},render:(page,phase)=>page==='income'?income(phase):page==='incomedetail'?ledger.detail():page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
+  function preload(page){if(typeof Image==='undefined')return;const files=myFiles[page]?[myFiles[page]]:configs[page]?[configs[page].file]:page==='all'?['IMG_9526.png']:[];if(page==='finance')files.push('IMG_9515.png');if(page==='home')files.push('首页下.png');for(const file of files){if(preloaded.has(file))continue;preloaded.add(file);const image=new Image();image.src=P+file;}}
+  function reset(){pinLength=0;todoYear=2026;todoMonth=10;todoDay=5;ledger.reset();fxSide='购汇';incomeMonth='all';incomeFilter='全部';city='北京';wealthVisible=false;activityTab='最新上线';}
+  return {titles,timing,home,profile,mainTabs,handle,reset,preload,enter:(page,previous,{replace})=>{if(page==='income'&&previous!=='income'&&previous!=='incomedetail'&&!replace)ledger.resetFilters();},render:(page,phase)=>myFiles[page]||page==='todo'?myPage(page,phase):page==='income'?income(phase):page==='incomedetail'?ledger.detail():page==='forex'?forex(phase):page==='cities'?cities(phase):page==='all'?all(phase):screenshotPage(page,phase)};
 };
