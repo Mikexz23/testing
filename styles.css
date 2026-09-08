@@ -63,3 +63,5 @@
 /* Crop photographed system indicators; iOS supplies the real ones. */
 .splash{background:#fff}
 .splash img{object-fit:fill;clip-path:inset(5.3% 0 4%)}
+/* Allow page scrolling without pinch zoom on every screen and overlay. */
+html,body,.screen-stack,#app,#overlay{touch-action:pan-x pan-y}

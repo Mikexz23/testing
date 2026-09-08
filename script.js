@@ -155,7 +155,10 @@
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();goBack();}if(e.key==='Tab'&&modal){const buttons=[...overlay.querySelectorAll('button:not(:disabled)')];if(!buttons.length)return;const first=buttons[0],last=buttons[buttons.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
   let touch=null;
-  phone.addEventListener('touchstart',e=>{const t=e.touches[0],rect=phone.getBoundingClientRect();touch={x:t.clientX,y:t.clientY,edge:t.clientX-rect.left<28,top:(app.querySelector('[data-scroll]')?.scrollTop||0)===0}}, {passive:true});
+  // Apply the same pinch policy to every route and overlay, including Safari gestures.
+  function preventPinch(e){if(e.touches?.length>1||e.type.startsWith('gesture')){touch=null;if(e.cancelable)e.preventDefault();}}
+  ['touchstart','touchmove','gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,preventPinch,{passive:false,capture:true}));
+  phone.addEventListener('touchstart',e=>{if(e.touches.length!==1){touch=null;return;}const t=e.touches[0],rect=phone.getBoundingClientRect();touch={x:t.clientX,y:t.clientY,edge:t.clientX-rect.left<28,top:(app.querySelector('[data-scroll]')?.scrollTop||0)===0}}, {passive:true});
   // Safari owns browser edge swipes; custom back is only for installed apps.
   const installedApp=()=>window.navigator?.standalone===true||window.matchMedia?.('(display-mode: standalone)').matches;
   phone.addEventListener('touchmove',e=>{if(!touch||!touch.edge||!installedApp())return;const t=e.touches[0];if(t.clientX-touch.x>12&&Math.abs(t.clientY-touch.y)<Math.abs(t.clientX-touch.x)&&e.cancelable){e.preventDefault();touch.owned=true;}},{passive:false});
