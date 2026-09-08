@@ -120,6 +120,8 @@
 @keyframes face-pop{from{transform:scale(.8);opacity:.4}to{transform:scale(1);opacity:1}}
 @media(prefers-reduced-motion:reduce){.face-button.scanning .face-orbit,.face-button.scanning .face-orbit::before{animation:none}}
 /* Fixed dot geometry avoids wide spacing from different device fonts. */
+.custom-dates button.selected{border-color:#f27780;background:#fff0f1;color:#e6606c}
+.custom-dates>div{display:flex;gap:2cqw}.custom-dates>div button{flex:1;margin:0 0 2cqw;padding:2cqw 0;white-space:nowrap}
 .new-page-scroll{padding:0 0 var(--safe-bottom);background:#f7f7f7}
 .new-page-scroll .reference-slice{flex:none}
 .my-native{background:#000}

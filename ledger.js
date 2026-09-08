@@ -13,7 +13,7 @@ window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeM
     {id:'recent-fund',month:'2026-07',day:'7.15',date:'2026-07-15',label:'蚂蚁（杭州）销售…',time:'14:29',seconds:'37',amount:-640.47,balance:359.33,type:'fund'},
     {id:'recent-transfer',month:'2026-07',day:'7.15',date:'2026-07-15',label:'转账-张迅(1233)',time:'10:44',seconds:'15',amount:1000,balance:1000,type:'transfer',party:'张迅'}
   ].map(entry=>entry.type==='deposit'?{...entry,amount:-termFor(entry.product,entry.date).amount}:entry);
-  let month='all',filter='全部',selected=entries[0],pickerMode='month',year=new Date().getFullYear(),pickMonth=new Date().getMonth()+1,rangeStart='2026-09-01',rangeEnd='2026-09-05',custom=false;
+  let month='all',filter='全部',selected=entries[0],pickerMode='month',year=new Date().getFullYear(),pickMonth=new Date().getMonth()+1,rangeStart='2026-09-01',rangeEnd='2026-09-05',custom=false,selectedShortcut='';
   const excluded=new Set(entries.map(r=>r.id));
   const notes=new Map();
   const escapeText=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
@@ -46,26 +46,35 @@ window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeM
       }
     });
   }
+  function syncCustomDates(){
+    document.querySelectorAll?.('[data-action="date-shortcut"]').forEach(button=>{
+      const active=button.dataset.value===selectedShortcut;
+      button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));
+    });
+    const start=document.querySelector?.('[data-date="start"]'),end=document.querySelector?.('[data-date="end"]');
+    if(start){start.value=rangeStart;start.max=rangeEnd;}
+    if(end){end.value=rangeEnd;end.min=rangeStart;}
+  }
   function picker(){
     clampPicker();
-    showModal(`<div class="picker-tabs"><button data-action="picker-tab" data-value="month" class="${pickerMode==='month'?'selected':''}">月份选择</button><button data-action="picker-tab" data-value="custom" class="${pickerMode==='custom'?'selected':''}">自定义</button><button data-action="close" aria-label="关闭">×</button></div>${pickerMode==='month'?`<div class="picker-wheels">${wheel('year',Array.from({length:5},(_,i)=>2022+i),year)}${wheel('month',Array.from({length:year===2026?9:12},(_,i)=>i+1),pickMonth)}</div>`:`<div class="custom-dates"><p>快捷时间</p><div>${['上月','近三月','近一年'].map(x=>`<button data-action="date-shortcut" data-value="${x}">${x}</button>`).join('')}</div><p>自定义</p><label>开始日期<input type="date" data-date="start" value="${rangeStart}" max="${rangeEnd}"></label><label>结束日期<input type="date" data-date="end" value="${rangeEnd}" min="${rangeStart}"></label></div>`}<button class="picker-confirm" data-action="confirm-month">确定</button>`,'month-picker');
+    showModal(`<div class="picker-tabs"><button data-action="picker-tab" data-value="month" class="${pickerMode==='month'?'selected':''}">月份选择</button><button data-action="picker-tab" data-value="custom" class="${pickerMode==='custom'?'selected':''}">自定义</button><button data-action="close" aria-label="关闭">×</button></div>${pickerMode==='month'?`<div class="picker-wheels">${wheel('year',Array.from({length:5},(_,i)=>2022+i),year)}${wheel('month',Array.from({length:year===2026?9:12},(_,i)=>i+1),pickMonth)}</div>`:`<div class="custom-dates"><p>快捷时间</p><div>${['上月','近三月','近一年','近三年'].map(x=>`<button data-action="date-shortcut" data-value="${x}" class="${selectedShortcut===x?'selected':''}" aria-pressed="${selectedShortcut===x}">${x}</button>`).join('')}</div><p>自定义</p><label>开始日期<input type="date" data-date="start" value="${rangeStart}" max="${rangeEnd}"></label><label>结束日期<input type="date" data-date="end" value="${rangeEnd}" min="${rangeStart}"></label></div>`}<button class="picker-confirm" data-action="confirm-month">确定</button>`,'month-picker');
     document.querySelectorAll?.('.date-wheel').forEach(el=>{const selectedOption=el.querySelector('[aria-selected="true"]');if(selectedOption)el.scrollTop=[...el.querySelectorAll('button')].indexOf(selectedOption)*selectedOption.offsetHeight;let pending;el.addEventListener('scroll',()=>{clearTimeout(pending);pending=setTimeout(()=>{if(!el.isConnected)return;const options=[...el.querySelectorAll('button')];const h=options[0]?.offsetHeight||1;const index=Math.max(0,Math.min(options.length-1,Math.round(el.scrollTop/h)));options.forEach((b,i)=>{b.classList.toggle('selected',i===index);b.setAttribute('aria-selected',String(i===index));});if(el.dataset.wheel==='year'){const nextYear=Number(options[index].dataset.value);if(nextYear!==year){year=nextYear;syncWheels('month');}}else{pickMonth=Number(options[index].dataset.value);clampPicker();}},80);},{passive:true});});
   }
   function detail(){
     selected=entries.find(r=>r.id===getRoute().record)||selected;const r=selected;
     const category=r.type==='deposit'?'定期':r.type==='fund'?'基金':'转账给他人';
     const label=r.type==='fund'?'蚂蚁（杭州）基金销售有限公司':r.type==='transfer'?r.party:r.label;
-    const info=[['交易卡号','6214********0813'],['交易时间',r.date+' '+r.time+(r.seconds?':'+r.seconds:'')],...(r.type==='transfer'?[['付款银行',r.party==='张建生'?'中国建设银行':'交通银行'],['付款账号',r.party==='张建生'?'6217********8896':'尾号1233'],['转账附言','转账']]:r.type==='fund'?[['交易渠道','<span class="alipay-mark">支</span> 支付宝']]:[]),['银行交易类型',r.type==='deposit'?'享定存开户起息':r.type==='fund'?'网联协议支付':'转账汇款']];
+    const info=[['交易卡号','6214********0813'],['交易时间',r.date+' '+r.time+(r.seconds?':'+r.seconds:'')],...(r.type==='transfer'?[['付款银行',r.party==='张建生'?'中国建设银行':'交通银行'],['付款账号',r.party==='张建生'?'6217********8896':'尾号1233'],['转账附言','转账']]:r.type==='fund'?[['交易渠道','<span class="alipay-mark">支</span> 支付宝']]:[]),['银行交易类型',r.type==='deposit'?'尊定存开户起息':r.type==='fund'?'网联协议支付':'转账汇款']];
     return `${header('交易详情')}<div class="scroll-area ledger-detail latest-ledger-detail" data-scroll><section class="ledger-detail-card"><div class="ledger-detail-amount"><span><i class="party-symbol ${r.type}">${r.type==='transfer'?'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M3 22a9 9 0 0 1 18 0z"/></svg>':r.type==='fund'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h18l-2-5H5zM3 8v4q3 3 6 0 3 3 6 0 3 3 6 0V8M5 14v7h14v-7"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 10h20M15 16h4"/></svg>'}</i>${label}</span><strong>${amount(r)}</strong><small>余额 ¥${money(r.balance)}</small></div><dl class="detail-rows">${info.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section><button class="pension-banner" data-action="ledger-pension"><span>个人养老金</span><b>算出未来资产增幅</b></button><div class="ledger-detail-options"><button data-action="ledger-category"><span>分类</span><span>${ledgerIcon(r.type)} ${category} <i class="option-chevron">›</i></span></button><button data-action="ledger-book"><span>所属账本</span><span>${r.type==='transfer'?'请选择':'理财'} <i class="option-chevron">›</i></span></button><button data-action="ledger-exclude" role="switch" aria-checked="${excluded.has(r.id)}"><span>不计入本月收支</span><i class="ledger-switch ${excluded.has(r.id)?'on':''}"></i></button><label class="ledger-note">备注<textarea data-ledger-note="${r.id}" aria-label="备注" placeholder="记录点什么..." maxlength="100">${escapeText(notes.get(r.id)||'')}</textarea></label></div></div>`;
   }
   document.addEventListener('input',e=>{if(e.target.dataset?.ledgerNote)notes.set(e.target.dataset.ledgerNote,e.target.value);});
-  document.addEventListener('change',e=>{if(e.target.dataset?.date==='start')rangeStart=e.target.value;if(e.target.dataset?.date==='end')rangeEnd=e.target.value;});
+  document.addEventListener('change',e=>{if(!['start','end'].includes(e.target.dataset?.date))return;if(e.target.dataset.date==='start')rangeStart=e.target.value;else rangeEnd=e.target.value;selectedShortcut='';syncCustomDates();});
   function handle(action,b){const v=b.dataset.value;
     if(action==='cash-actions'){showModal(`${[['转账汇款','transfer'],['收支明细','income'],['购买理财','finance'],['购买存款','products'],['转入朝朝宝','finance'],['银行卡管理',null]].map(([label,page])=>`<button class="cash-action" ${page?`data-go="${page}"`:'data-action="income-card"'}>${label}<span>›</span></button>`).join('')}<button class="sheet-cancel" data-action="close">取消</button>`,'cash-sheet');return true;}
     if(action==='income-month'){pickerMode='month';if(month!=='all'){year=Number(month.slice(0,4));pickMonth=Number(month.slice(5));}else{const now=new Date();year=now.getFullYear();pickMonth=now.getMonth()+1;}picker();return true;}
     if(action==='picker-tab'){pickerMode=v;picker();return true;}
     if(action==='wheel-option'){if(b.dataset.wheel==='year')year=Number(v);else pickMonth=Number(v);syncWheels(b.dataset.wheel);return true;}
-    if(action==='date-shortcut'){rangeEnd='2026-09-05';rangeStart=v==='上月'?'2026-08-01':v==='近三月'?'2026-06-05':'2025-09-05';if(v==='上月')rangeEnd='2026-08-31';picker();return true;}
+    if(action==='date-shortcut'){selectedShortcut=v;rangeEnd='2026-09-05';rangeStart=v==='上月'?'2026-08-01':v==='近三月'?'2026-06-05':v==='近三年'?'2023-09-05':'2025-09-05';if(v==='上月')rangeEnd='2026-08-31';syncCustomDates();return true;}
     if(action==='confirm-month'){clampPicker();if(pickerMode==='custom'&&(!rangeStart||!rangeEnd||rangeStart>rangeEnd))return true;custom=pickerMode==='custom';month=year+'-'+String(pickMonth).padStart(2,'0');navigate({page:'income'},{replace:true});return true;}
     if(action==='set-income-month'){month=v;custom=false;navigate({page:'income'},{replace:true});return true;}
     if(action==='income-filter'){choices('收支类型',['全部','收入','支出'].map(x=>[x,x]),'set-income-filter',filter);return true;}
