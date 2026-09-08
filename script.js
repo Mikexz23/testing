@@ -8,9 +8,9 @@
   };
   const termFor=(id,date)=>{const [start,rate,amount]=depositTerms[id].find(r=>r[0]===date)||depositTerms[id][0];return {start,rate,amount,end:String(Number(start.slice(0,4))+1)+start.slice(4)};};
   const products = [
-    {id:'m',name:'享定存M',serial:'048069',opened:'2024-01-01',code:'D23SU71LA048069',minimum:1000},
-    {id:'2',name:'享定期2号',serial:'088169',opened:'2010-11-26',code:'D23SU718A088169',minimum:100000},
-    {id:'5',name:'享定期5号',serial:'076237',opened:'2024-06-15',code:'D23SU613A076237',minimum:100000}
+    {id:'m',name:'尊定存 1号',serial:'048069',opened:'2024-01-01',code:'D23SU71LA048069',minimum:1000},
+    {id:'2',name:'尊定存 M',serial:'088169',opened:'2010-11-26',code:'D23SU718A088169',minimum:100000},
+    {id:'5',name:'尊定存 享',serial:'076237',opened:'2024-06-15',code:'D23SU613A076237',minimum:100000}
   ].map(p=>({...p,...termFor(p.id)}));
   const total=products.reduce((sum,p)=>sum+p.amount,0);
   const money=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
