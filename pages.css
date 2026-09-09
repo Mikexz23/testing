@@ -103,7 +103,7 @@
 .holding-row>div:first-child{align-items:baseline}
 .holding-row>div:first-child>span,.holding-row>div:first-child>strong{line-height:1.35;margin:0}
 .card-information h2{font-size:4.1cqw}.card-information p{font-size:3.8cqw;line-height:1.7}
-.product-detail-header .nav{height:19cqw}.product-detail-header h1{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqw;font-size:4.5cqw;line-height:1.2}
+.product-detail-header .nav{height:19cqw}.product-detail-header h1{display:flex;align-items:center;justify-content:center;height:100%;margin:0;font-size:4.5cqw;line-height:1.2}
 .product-detail-header .product-code{position:static;width:auto;font-size:3.2cqw;color:inherit;line-height:1.2;font-weight:500}
 .product-detail-scroll{top:calc(var(--safe-top) + 19cqw);overscroll-behavior-y:none}
 /* Local Face ID simulation: blue scan ring, then a confirmation check. */

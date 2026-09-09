@@ -1,7 +1,7 @@
 /* Screenshots in reference/new details define amounts; IMG_4040 defines gestures. */
 window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeModal,choices,service,getRoute})=>{
   const entries=[
-    {id:'transfer-large',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:51',seconds:'34',amount:6137179.46,balance:6138179.46,type:'transfer',party:'张建生'},
+    {id:'transfer-large',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:51',seconds:'34',amount:6137179.14,balance:6138179.14,type:'transfer',party:'张建生'},
     {id:'transfer-initial',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:32',seconds:'18',amount:1000,balance:1000,type:'transfer',party:'张建生'},
     {id:'deposit-opening',month:'2024-01',day:'1.1',date:'2024-01-01',label:'开户起息，产品代码：D23SU71LA048069',time:'09:51',seconds:'26',balance:0,type:'deposit',product:'m'},
     {id:'may-transfer',month:'2024-05',day:'5.27',date:'2024-05-27',label:'转账-张迅(1233)',time:'10:22',seconds:'43',amount:4306.15,balance:4306.15,type:'transfer',party:'张迅'},
@@ -26,7 +26,7 @@ window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeM
   function renderIncome(phase){
     let list=entries.filter(r=>(custom?r.date>=rangeStart&&r.date<=rangeEnd:month==='all'?r.month.startsWith('2026-'):r.month===month)&&(filter==='全部'||(filter==='收入'?r.amount>0:r.amount<0)));
     const months=month==='all'&&!custom?Array.from({length:9},(_,i)=>'2026-'+String(9-i).padStart(2,'0')):custom?[...new Set(list.map(r=>r.month))].sort().reverse():[month];
-    return `${top()}<div class="income-filters ledger-filters"><button data-action="income-month">${custom?'自定义':month==='all'?'2026':month.replace('-','.')}▼</button><button data-action="income-card">储蓄卡 0813</button><button data-action="income-filter">${filter==='全部'?'筛选':filter}</button></div><div class="scroll-area ledger-scroll" data-scroll>${phase!=='ready'?'<div class="income-loading">一大波数据正在赶来，请耐心等待</div>':months.map(m=>{const items=list.filter(r=>r.month===m);return `<section class="ledger-month ${items.length?'':'ledger-empty'}"><h2>${Number(m.slice(5))}月</h2>${items.length?`${rows(items)}`:'<span>暂无明细</span>'}</section>`;}).join('')||'<p class="empty">暂无明细</p>'}</div>${tabs()}`;
+    return `${top()}<div class="income-filters ledger-filters"><button data-action="income-month">${custom?'自定义':month==='all'?'2026':month.replace('-','.')}▼</button><button data-action="income-card">储蓄卡 0813</button><button data-action="income-filter">${filter==='全部'?'筛选':filter}</button></div><div class="scroll-area ledger-scroll" data-scroll>${phase!=='ready'?'<div class="income-loading">一大波数据正在赶来，请耐心等待</div>':months.map(m=>{const items=list.filter(r=>r.month===m);return `<section class="ledger-month ${items.length?'':'ledger-empty'}"><h2>${custom?m.slice(0,4)+'年':''}${Number(m.slice(5))}月</h2>${items.length?`${rows(items)}`:'<span>暂无明细</span>'}</section>`;}).join('')||'<p class="empty">暂无明细</p>'}</div>${tabs()}`;
   }
   function wheel(name,values,value){return `<div class="date-wheel" data-wheel="${name}" tabindex="0" role="listbox" aria-label="${name==='year'?'年份':'月份'}">${values.map(v=>`<button role="option" aria-selected="${v===value}" class="${v===value?'selected':''}" data-action="wheel-option" data-wheel="${name}" data-value="${v}">${v}</button>`).join('')}</div>`;}
   function clampPicker(){year=Math.max(2022,Math.min(2026,year));pickMonth=Math.max(1,Math.min(year===2026?9:12,pickMonth));}
