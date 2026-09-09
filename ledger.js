@@ -1,7 +1,7 @@
 /* Screenshots in reference/new details define amounts; IMG_4040 defines gestures. */
 window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeModal,choices,service,getRoute})=>{
   const entries=[
-    {id:'transfer-large',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:51',seconds:'34',amount:6136719.14,balance:6137719.14,type:'transfer',party:'张建生'},
+    {id:'transfer-large',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:51',seconds:'34',amount:6136719.15,balance:6137719.15,type:'transfer',party:'张建生'},
     {id:'transfer-initial',month:'2023-12',day:'12.18',date:'2023-12-18',label:'转账-张建生(8896)',time:'02:32',seconds:'18',amount:1000,balance:1000,type:'transfer',party:'张建生'},
     {id:'deposit-opening',month:'2024-01',day:'1.1',date:'2024-01-01',label:'开户起息，产品代码：D23SU71LA048069',time:'09:51',seconds:'26',balance:0,type:'deposit',product:'m'},
     {id:'may-transfer',month:'2024-05',day:'5.27',date:'2024-05-27',label:'转账-张迅(1233)',time:'10:22',seconds:'43',amount:4306.15,balance:4306.15,type:'transfer',party:'张迅'},
@@ -10,7 +10,7 @@ window.createLedger=({header,icon,money,termFor,navigate,render,showModal,closeM
     {id:'june-opening',month:'2024-06',day:'6.15',date:'2024-06-15',label:'开户起息，产品代码：D23SU613A076237',time:'12:13',seconds:'11',amount:-2234306.15,balance:0,type:'deposit',product:'5'},
     {id:'june-transfer',month:'2024-06',day:'6.15',date:'2024-06-15',label:'转账-张建生(8896)',time:'11:36',seconds:'52',amount:2230000,balance:2234306.15,type:'transfer',party:'张建生'},
     // July dates corrected to July 15 at the user's request.
-    {id:'recent-fund',month:'2026-07',day:'7.15',date:'2026-07-15',label:'蚂蚁（杭州）销售…',time:'14:29',seconds:'37',amount:-640.47,balance:359.33,type:'fund'},
+    {id:'recent-fund',month:'2026-07',day:'7.15',date:'2026-07-15',label:'蚂蚁（杭州）销售…',time:'14:29',seconds:'37',amount:-640.67,balance:359.33,type:'fund'},
     {id:'recent-transfer',month:'2026-07',day:'7.15',date:'2026-07-15',label:'转账-张迅(1233)',time:'10:44',seconds:'15',amount:1000,balance:1000,type:'transfer',party:'张迅'}
   ].map(entry=>entry.type==='deposit'?{...entry,amount:-termFor(entry.product,entry.date).amount}:entry);
   let month='all',filter='全部',selected=entries[0],pickerMode='month',year=new Date().getFullYear(),pickMonth=new Date().getMonth()+1,rangeStart='2026-09-01',rangeEnd='2026-09-05',custom=false,selectedShortcut='';
